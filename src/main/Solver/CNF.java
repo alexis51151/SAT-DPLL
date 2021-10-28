@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class CNF implements Form{
-    private final List<Clause> clauses;
+    private List<Clause> clauses;
 
     public CNF(List<Clause> clauses) {
         this.clauses = clauses;
+    }
+
+    public List<Clause> getClauses() {
+        return clauses;
     }
 
     @Override
@@ -48,5 +52,9 @@ public class CNF implements Form{
     @Override
     public int hashCode() {
         return Objects.hash(clauses);
+    }
+
+    public void removeClause(Clause clause) {
+        clauses.remove(clause);
     }
 }

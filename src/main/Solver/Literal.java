@@ -3,30 +3,34 @@ package Solver;
 import java.util.Objects;
 
 public class Literal implements Form{
-    private final Prop p;
+    private final Prop prop;
     private final boolean negative;
 
     public Literal(Prop p, boolean negative) {
-        this.p = p;
+        this.prop = p;
         this.negative = negative;
     }
 
     public Literal(String symbol, boolean negative) {
-        this.p = new Prop(symbol);
+        this.prop = new Prop(symbol);
         this.negative = negative;
+    }
+
+    public Prop getProp() {
+        return prop;
     }
 
     @Override
     public boolean eval(TruthAssignment tau) {
-        return negative != p.eval(tau);
+        return negative != prop.eval(tau);
     }
 
     @Override
     public Form substitute(String symbol, Boolean b) {
-        if (symbol.equals(p.getSymbol())) {
+        if (symbol.equals(prop.getSymbol())) {
             return new ConstForm(negative != b);
         }
-        return new Literal(p, negative);
+        return new Literal(prop, negative);
     }
 
     public boolean isNegative() {
@@ -38,11 +42,11 @@ public class Literal implements Form{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Literal literal = (Literal) o;
-        return isNegative() == literal.isNegative() && Objects.equals(p, literal.p);
+        return isNegative() == literal.isNegative() && Objects.equals(prop, literal.prop);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(p, isNegative());
+        return Objects.hash(prop, isNegative());
     }
 }

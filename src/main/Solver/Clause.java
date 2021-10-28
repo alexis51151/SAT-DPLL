@@ -15,6 +15,10 @@ public class Clause implements Form{
         return literals;
     }
 
+    public int getNbLiterals() {
+        return literals.size();
+    }
+
     @Override
     public boolean eval(TruthAssignment tau) {
         // Disjunction of literals
