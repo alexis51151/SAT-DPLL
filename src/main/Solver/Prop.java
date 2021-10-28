@@ -31,4 +31,16 @@ public class Prop implements Form {
         return tau.eval(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Prop prop = (Prop) o;
+        return Objects.equals(getSymbol(), prop.getSymbol());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSymbol());
+    }
 }

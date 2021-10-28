@@ -1,5 +1,7 @@
 package Solver;
 
+import java.util.Objects;
+
 public class ConstForm implements Form{
     private final Boolean val;
 
@@ -24,5 +26,18 @@ public class ConstForm implements Form{
     @Override
     public Form substitute(String symbol, Boolean b) {
         return new ConstForm(this.val);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConstForm constForm = (ConstForm) o;
+        return Objects.equals(val, constForm.val);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(val);
     }
 }
