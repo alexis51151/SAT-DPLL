@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,7 @@ class ClauseTest {
         Literal notq_l = new Literal(q, true);
         Clause clause = new Clause(new ArrayList<>(Arrays.asList(p_l,notq_l)));
 
-        TruthAssignment tau = new TruthAssignment(new ArrayList<>(Arrays.asList(q)));
+        TruthAssignment tau = new TruthAssignment(new HashSet<>(Arrays.asList(q)));
         assertFalse(p.eval(tau));
         assertTrue(q.eval(tau));
         assertFalse(clause.eval(tau));
@@ -32,7 +33,7 @@ class ClauseTest {
         Literal notq_l = new Literal(q, true);
         Clause clause = new Clause(new ArrayList<>(Arrays.asList(p_l,notq_l)));
 
-        TruthAssignment tau = new TruthAssignment(new ArrayList<>(Arrays.asList(p)));
+        TruthAssignment tau = new TruthAssignment(new HashSet<>(Arrays.asList(p)));
         assertTrue(p.eval(tau));
         assertFalse(q.eval(tau));
         assertTrue(p_l.eval(tau));
@@ -48,7 +49,7 @@ class ClauseTest {
         Literal notq_l = new Literal(q, true);
         Clause clause = new Clause(new ArrayList<>(Arrays.asList(p_l,notq_l)));
 
-        TruthAssignment tau = new TruthAssignment(new ArrayList<>(Arrays.asList(p,q)));
+        TruthAssignment tau = new TruthAssignment(new HashSet<>(Arrays.asList(p,q)));
         assertTrue(p.eval(tau));
         assertTrue(q.eval(tau));
         assertTrue(p_l.eval(tau));

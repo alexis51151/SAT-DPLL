@@ -1,8 +1,6 @@
 package Solver;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class DPLL implements SATSolver {
     private final List<Prop> props; // World definition
@@ -24,10 +22,70 @@ public class DPLL implements SATSolver {
         return solve(phi, DPLL.create(props));
     }
 
+    public TruthAssignment SATTruthAssignement(Form phi) {
+        return solve(phi, DPLL.create(props), new TruthAssignment(new HashSet<>()));
+    }
+
+    public TruthAssignment solve(Form phi, List<Prop> AP, TruthAssignment tau) {
+        // Base cases
+        if (AP.size() == 0 || phi instanceof ConstForm || (phi instanceof CNF && ((CNF) phi).nbClauses() == 0)) {
+            return eval(phi, new TruthAssignment(new HashSet<>())) ? tau : null;
+        }
+
+        assert phi instanceof CNF;
+        // Unit-Preference Rule
+        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi);
+        if (choice != null) {
+            Prop p = choice.a;
+            Boolean b = choice.b;
+            Form psi = phi.substitute(p.getSymbol(), b);
+            if (b) {
+                Set<Prop> new_props = tau.getTau();
+                new_props.add(p);
+                return solve(psi, DPLL.create(AP), new TruthAssignment(new_props));
+            }
+            return solve(psi, DPLL.create(AP), tau);
+        }
+
+        // Splitting Rule
+        choice = chooseRandom(AP);
+        Prop p = choice.a;
+        Boolean b = choice.b;
+        if (b) {
+            Set<Prop> new_props = tau.getTau();
+            new_props.add(p);
+
+            // 1st option
+            Form psi = phi.substitute(p.getSymbol(), b);
+            TruthAssignment new_tau = solve(psi, DPLL.create(AP), new TruthAssignment(new_props));
+            if (new_tau != null) {
+                return new_tau;
+            }
+            // 2nd option
+            Form theta = phi.substitute(p.getSymbol(), !b);
+            return solve(theta, DPLL.create(AP), tau);
+        }
+
+        // 1st option
+        Form psi = phi.substitute(p.getSymbol(), b);
+        TruthAssignment new_tau = solve(psi, DPLL.create(AP), tau);
+        if (new_tau != null) {
+            return new_tau;
+        }
+
+        // 2nd option
+        Form theta = phi.substitute(p.getSymbol(), !b);
+        Set<Prop> new_props = tau.getTau();
+        new_props.add(p);
+        return solve(theta, DPLL.create(AP), new TruthAssignment(new_props));
+    }
+
+
+
     public Boolean solve(Form phi, List<Prop> AP) {
         // Base case
         if (AP.size() == 0 || phi instanceof ConstForm) {
-            return eval(phi, new TruthAssignment(new ArrayList<>()));
+            return eval(phi, new TruthAssignment(new HashSet<>()));
         }
 
         assert phi instanceof CNF;

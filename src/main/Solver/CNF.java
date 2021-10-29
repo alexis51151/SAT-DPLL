@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class CNF implements Form{
-    private List<Clause> clauses;
+    private final List<Clause> clauses;
 
     public CNF(List<Clause> clauses) {
         this.clauses = clauses;
@@ -14,6 +14,8 @@ public class CNF implements Form{
     public List<Clause> getClauses() {
         return clauses;
     }
+
+    public int nbClauses() { return clauses.size(); }
 
     @Override
     public boolean eval(TruthAssignment tau) {

@@ -1,12 +1,17 @@
 package Solver;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class TruthAssignment {
-    private final List<Prop> tau; // List of props that are evaluated as 1
+    private final Set<Prop> tau; // List of props that are evaluated as 1
 
-    public TruthAssignment(List<Prop> tau) {
+    public TruthAssignment(Set<Prop> tau) {
         this.tau = tau;
+    }
+
+    public Set<Prop> getTau() {
+        return tau;
     }
 
     public Boolean eval(Prop p) {
@@ -24,6 +29,17 @@ public class TruthAssignment {
     @Override
     public int hashCode() {
         return Objects.hash(tau);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("{");
+        for (Prop p : tau) {
+            str.append(p.getSymbol()).append(",");
+        }
+        str.deleteCharAt(str.length()-1);
+        str.append("}");
+        return str.toString();
     }
 }
 

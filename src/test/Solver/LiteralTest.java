@@ -3,6 +3,7 @@ package Solver;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +13,7 @@ public class LiteralTest {
     @Test
     public void literalTest1() {
         Prop p = new Prop("p");
-        TruthAssignment tau = new TruthAssignment(new ArrayList<>(List.of(p)));
+        TruthAssignment tau = new TruthAssignment(new HashSet<>(List.of(p)));
         Literal l = new Literal(p, false);
         assertTrue(l.eval(tau));
     }
@@ -20,7 +21,7 @@ public class LiteralTest {
     @Test
     public void literalTest2() {
         Prop p = new Prop("p");
-        TruthAssignment tau = new TruthAssignment(new ArrayList<>(List.of(p)));
+        TruthAssignment tau = new TruthAssignment(new HashSet<>(List.of(p)));
         Literal l = new Literal(p, true);
         assertFalse(l.eval(tau));
     }
@@ -28,7 +29,7 @@ public class LiteralTest {
     @Test
     public void literalTest3() {
         Prop p = new Prop("p");
-        TruthAssignment tau = new TruthAssignment(new ArrayList<>());
+        TruthAssignment tau = new TruthAssignment(new HashSet<>());
         Literal l = new Literal(p, true);
         assertTrue(l.eval(tau));
     }
