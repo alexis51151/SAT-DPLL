@@ -18,6 +18,10 @@ public class TruthAssignment {
         return tau.contains(p);
     }
 
+    public Boolean contains(Prop p){
+        return tau.contains(p);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -16,6 +16,10 @@ public class Literal implements Form{
         this.negative = negative;
     }
 
+    public Literal negation() {
+        return new Literal(prop, !negative);
+    }
+
     public Prop getProp() {
         return prop;
     }

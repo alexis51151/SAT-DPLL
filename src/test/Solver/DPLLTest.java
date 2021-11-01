@@ -52,7 +52,7 @@ class DPLLTest {
 
         // Definition of clauses
         Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(p_l, q_l)));
-        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(notq_l)));
+        Clause clause2 = new Clause(new ArrayList<>(List.of(notq_l)));
         Clause clause3 = new Clause(new ArrayList<>(List.of(notp_l)));
 
         // Definition of CNF formulas
@@ -77,8 +77,8 @@ class DPLLTest {
 
         // Definition of clauses
         Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(p_l, q_l)));
-        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(notp_l)));
-        Clause clause3 = new Clause(new ArrayList<>(Arrays.asList(notq_l)));
+        Clause clause2 = new Clause(new ArrayList<>(List.of(notp_l)));
+        Clause clause3 = new Clause(new ArrayList<>(List.of(notq_l)));
 
         // Definition of CNF formulas
         CNF cnf1 = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2)));
@@ -137,7 +137,7 @@ class DPLLTest {
 
         // Definition of clauses
         Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(p_l, q_l)));
-        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(notq_l)));
+        Clause clause2 = new Clause(new ArrayList<>(List.of(notq_l)));
         Clause clause3 = new Clause(new ArrayList<>(List.of(notp_l)));
 
         // Definition of CNF formulas
@@ -163,8 +163,8 @@ class DPLLTest {
 
         // Definition of clauses
         Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(p_l, q_l)));
-        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(notp_l)));
-        Clause clause3 = new Clause(new ArrayList<>(Arrays.asList(notq_l)));
+        Clause clause2 = new Clause(new ArrayList<>(List.of(notp_l)));
+        Clause clause3 = new Clause(new ArrayList<>(List.of(notq_l)));
 
         // Definition of CNF formulas
         CNF cnf1 = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2)));
