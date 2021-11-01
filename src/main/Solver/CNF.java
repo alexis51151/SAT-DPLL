@@ -1,11 +1,12 @@
 package Solver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class CNF implements Form{
-    private final List<Clause> clauses;
+    private List<Clause> clauses;
 
     public CNF(List<Clause> clauses) {
         this.clauses = clauses;
@@ -16,6 +17,12 @@ public class CNF implements Form{
     }
 
     public int nbClauses() { return clauses.size(); }
+
+    public void addAll(CNF cnf) {
+        List<Clause> newClauses = new ArrayList<>(clauses);
+        newClauses.addAll(cnf.getClauses());
+        this.clauses = newClauses;
+    }
 
     @Override
     public boolean eval(TruthAssignment tau) {
@@ -58,5 +65,14 @@ public class CNF implements Form{
 
     public void removeClause(Clause clause) {
         clauses.remove(clause);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for (Clause clause : clauses) {
+            s.append(clause.toString()).append("\n /\\ ");
+        }
+        return s.substring(0, s.length() - 3);
     }
 }

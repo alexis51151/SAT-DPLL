@@ -53,4 +53,12 @@ public class Literal implements Form{
     public int hashCode() {
         return Objects.hash(prop, isNegative());
     }
+
+    @Override
+    public String toString() {
+        if (isNegative()) {
+            return "~" + prop.toString();
+        }
+        return prop.toString();
+    }
 }

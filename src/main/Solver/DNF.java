@@ -3,7 +3,7 @@ package Solver;
 import java.util.*;
 
 public class DNF implements Form{
-    private List<List<Literal>> disjunctions;
+    private final List<List<Literal>> disjunctions;
 
     public DNF(List<List<Literal>> disjunctions) {
         this.disjunctions = disjunctions;

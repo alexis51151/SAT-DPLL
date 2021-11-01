@@ -62,4 +62,15 @@ public class Clause implements Form{
     public int hashCode() {
         return Objects.hash(getLiterals());
     }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder("(");
+        for (Literal literal : literals) {
+            s.append(literal.toString()).append(" \\/ ");
+        }
+        s = new StringBuilder(s.substring(0, s.length() - 3));
+        s.append(")");
+        return s.toString();
+    }
 }
