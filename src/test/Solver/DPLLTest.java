@@ -176,9 +176,69 @@ class DPLLTest {
         // Test for satisfiability
         TruthAssignment tau1 = solver.SATTruthAssignement(cnf1);
         TruthAssignment tau2 = solver.SATTruthAssignement(cnf2);
+        System.out.println(tau1);
+        System.out.println(tau2);
 
         assertEquals(new TruthAssignment(new HashSet<>(List.of(q))), tau1);
         assertEquals(tau2, new TruthAssignment(new HashSet<>(List.of(p))));
     }
+
+    @Test
+    void SATTruthAssignement4() {
+        // Definition of literals
+        Prop p = new Prop("p");
+        Prop q = new Prop("q");
+        Prop r = new Prop("r");
+        Literal p_l = new Literal(p, false);
+        Literal q_l = new Literal(q, false);
+        Literal r_l = new Literal(r, false);
+
+        // Definition of clauses
+        Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(p_l, q_l, r_l)));
+        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(p_l.negation(), q_l.negation())));
+        Clause clause3 = new Clause(new ArrayList<>(Arrays.asList(p_l.negation(), r_l.negation())));
+        Clause clause4 = new Clause(new ArrayList<>(Arrays.asList(q_l.negation(), r_l.negation())));
+
+        // Definition of CNF formulas
+        CNF cnf = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2, clause3, clause4)));
+
+        // DPLL class
+        DPLL solver = new DPLL(Arrays.asList(p,q,r));
+
+        // Test for satisfiability
+        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        System.out.println(tau);
+    }
+
+    @Test
+    void SATTruthAssignement5() {
+        // Definition of literals
+        Prop n11= new Prop("n11");
+        Prop n12 = new Prop("n12");
+        Prop n21 = new Prop("n21");
+        Prop n22 = new Prop("n22");
+        Literal n11_l = new Literal(n11, false);
+        Literal n12_l = new Literal(n12, false);
+        Literal n21_l = new Literal(n21, false);
+        Literal n22_l = new Literal(n22, false);
+
+        // Definition of clauses
+        Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(n11_l, n12_l, n21_l, n22_l)));
+        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(n11_l.negation(), n12_l.negation())));
+        Clause clause3 = new Clause(new ArrayList<>(Arrays.asList(n21_l.negation(), n22_l.negation())));
+
+        // Definition of CNF formulas
+        CNF cnf = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2, clause3)));
+
+        // DPLL class
+        DPLL solver = new DPLL(Arrays.asList(n11, n12, n21, n22));
+
+        // Test for satisfiability
+        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        System.out.println(cnf);
+        System.out.println(tau);
+    }
+
+
 
 }
