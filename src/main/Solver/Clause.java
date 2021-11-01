@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Clause implements Form{
-    private final List<Literal> literals;
+    private List<Literal> literals;
 
     public Clause(List<Literal> literals) {
         this.literals = literals;
@@ -17,6 +17,10 @@ public class Clause implements Form{
 
     public int getNbLiterals() {
         return literals.size();
+    }
+
+    public void addLiteral(Literal l) {
+        literals.add(l);
     }
 
     @Override
