@@ -113,8 +113,8 @@ public class EinsteinPuzzle {
 
     public DNF leftHouse(String symbol1, String symbol2) {
         List<List<Literal>> disjunctions = new ArrayList<>();
-        for (int j = 1; j <= 5; j++) {
-            for (int i = 1; i < j; i++) {
+        for (int i = 1; i <= 5; i++) {
+            for (int j = 1; j < i; j++) {
                 List<Literal> conjunction = new ArrayList<>();
                 conjunction.add(new Literal(symbol1 + i, false));
                 conjunction.add(new Literal(symbol2 + j, false));
