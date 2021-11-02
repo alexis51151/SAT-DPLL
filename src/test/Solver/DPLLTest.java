@@ -239,6 +239,36 @@ class DPLLTest {
         System.out.println(tau);
     }
 
+    @Test
+    void SATTruthAssignement6() {
+        // Definition of literals
+        Prop n11= new Prop("n11");
+        Prop n12 = new Prop("n12");
+        Prop n21 = new Prop("n21");
+        Prop n22 = new Prop("n22");
+        Literal n11_l = new Literal(n11, false);
+        Literal n12_l = new Literal(n12, false);
+        Literal n21_l = new Literal(n21, false);
+        Literal n22_l = new Literal(n22, false);
+
+        // Definition of clauses
+        Clause clause1 = new Clause(new ArrayList<>(Arrays.asList(n11_l, n12_l)));
+        Clause clause2 = new Clause(new ArrayList<>(Arrays.asList(n21_l,n22_l)));
+        Clause clause3 = new Clause(new ArrayList<>(Arrays.asList(n11_l.negation(), n12_l.negation())));
+
+        // Definition of CNF formulas
+        CNF cnf = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2, clause3)));
+
+        // DPLL class
+        DPLL solver = new DPLL(Arrays.asList(n11, n12, n21, n22));
+
+        // Test for satisfiability
+        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        System.out.println(cnf);
+        System.out.println(tau);
+    }
+
+
 
 
 }

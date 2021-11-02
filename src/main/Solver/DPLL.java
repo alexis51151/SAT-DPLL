@@ -34,7 +34,7 @@ public class DPLL implements SATSolver {
 
         assert phi instanceof CNF;
         // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi);
+        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi, AP);
         if (choice != null) {
             Prop p = choice.a;
             Boolean b = choice.b;
@@ -51,33 +51,18 @@ public class DPLL implements SATSolver {
         choice = chooseRandom(AP);
         Prop p = choice.a;
         Boolean b = choice.b;
-        if (b) {
-            Set<Prop> new_props = tau.getTau();
-            new_props.add(p);
-
-            // 1st option
-            Form psi = phi.substitute(p.getSymbol(), b);
-            TruthAssignment new_tau = solve(psi, DPLL.create(AP), new TruthAssignment(new_props));
-            if (new_tau != null) {
-                return new_tau;
-            }
-            // 2nd option
-            Form theta = phi.substitute(p.getSymbol(), !b);
-            return solve(theta, DPLL.create(AP), tau);
-        }
 
         // 1st option
         Form psi = phi.substitute(p.getSymbol(), b);
-        TruthAssignment new_tau = solve(psi, DPLL.create(AP), tau);
-        if (new_tau != null) {
+        TruthAssignment new_tau = solve(psi, DPLL.create(AP), tau.create(choice));
+        if (new_tau != null){
             return new_tau;
         }
 
         // 2nd option
+        choice.b = !choice.b;
         Form theta = phi.substitute(p.getSymbol(), !b);
-        Set<Prop> new_props = tau.getTau();
-        new_props.add(p);
-        return solve(theta, DPLL.create(AP), new TruthAssignment(new_props));
+        return solve(theta, DPLL.create(AP), tau.create(choice));
     }
 
 
@@ -90,7 +75,7 @@ public class DPLL implements SATSolver {
 
         assert phi instanceof CNF;
         // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi);
+        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi, AP);
         if (choice != null) {
             Prop p = choice.a;
             Boolean b = choice.b;
@@ -114,7 +99,7 @@ public class DPLL implements SATSolver {
 
     }
 
-    public Pair<Prop, Boolean> unitPreferenceRule(CNF phi) {
+    public Pair<Prop, Boolean> unitPreferenceRule(CNF phi, List<Prop> AP) {
         List<Clause> unitClauses = new ArrayList<>();
         for (Clause clause : phi.getClauses()) {
             if (clause.getNbLiterals() == 1)
@@ -124,14 +109,27 @@ public class DPLL implements SATSolver {
         if (unitClauses.size() == 0){
             return null;
         }
-        return chooseRandomClause(unitClauses, phi);
+        return chooseRandomClause(unitClauses, phi, AP);
+//        return chooseFirstClause(unitClauses, phi, AP);
     }
 
     // Random choice of AP and boolean value
-    public Pair<Prop, Boolean> chooseRandomClause(List<Clause> C, CNF phi) {
+    public Pair<Prop, Boolean> chooseFirstClause(List<Clause> C, CNF phi, List<Prop> AP) {
+        Literal l = C.get(0).getLiterals().get(0);
+        AP.remove(l.getProp());
+        phi.removeClause(C.get(0));
+        if (l.isNegative())
+            return new Pair<>(l.getProp(), false);
+        return new Pair<>(l.getProp(), true);
+    }
+
+
+    // Random choice of AP and boolean value
+    public Pair<Prop, Boolean> chooseRandomClause(List<Clause> C, CNF phi, List<Prop> AP) {
         Clause clause = C.get(rand.nextInt(C.size()));
         phi.removeClause(clause);
         Literal l = clause.getLiterals().get(0);
+        AP.remove(l.getProp());
         if (l.isNegative())
             return new Pair<>(l.getProp(), false);
         return new Pair<>(l.getProp(), true);
@@ -145,5 +143,14 @@ public class DPLL implements SATSolver {
         Boolean c = rand.nextBoolean();
         return new Pair<>(p,c);
     }
+
+    // Random choice of AP and boolean value
+    public Pair<Prop, Boolean> chooseFirstProp(List<Prop> AP) {
+        Prop p = AP.get(0);
+        AP.remove(p);
+        Boolean c = true;
+        return new Pair<>(p,c);
+    }
+
 
 }

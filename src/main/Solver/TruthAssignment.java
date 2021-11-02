@@ -1,4 +1,5 @@
 package Solver;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -44,6 +45,16 @@ public class TruthAssignment {
         str.deleteCharAt(str.length()-1);
         str.append("}");
         return str.toString();
+    }
+
+    public TruthAssignment create(Pair<Prop, Boolean> choice) {
+        Set<Prop> props = new HashSet<>(tau);
+        Prop p = choice.a;
+        Boolean b = choice.b;
+        if (b) {
+            props.add(p);
+        }
+        return new TruthAssignment(props);
     }
 }
 
