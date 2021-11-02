@@ -33,5 +33,6 @@ class EinsteinPuzzleTest {
                 new Prop("n13"), new Prop("p55"), new Prop("p14"))));
         assertEquals(25, tau.getTau().size());
         assertEquals(expected, tau);
+        EinsteinPuzzle.printTruthAssignement(tau);
     }
 }

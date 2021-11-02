@@ -96,7 +96,6 @@ public class EinsteinPuzzle {
         // 15) "The man who smokes Blends has a neighbor who drinks water."
         DNF dnf15 = livesNextHouse("c3","b5");
         cnf.addAll(dnf15.toCNF());
-        // {b44,c21,c44,h42,b25,n41,h25,p42,n24,p23,b51,b33,c32,b12,c55,h53,h31,c13,h14,p31,n55,n32,n13,p55,p14}
         // Result CNF
         this.cnf = cnf;
     }
@@ -158,5 +157,34 @@ public class EinsteinPuzzle {
 
     public List<Prop> getAP() {
         return AP;
+    }
+
+    public static void printTruthAssignement(TruthAssignment tau) {
+        HashMap<String, String> printing = new HashMap<>();
+        List<String> n = new ArrayList<>(Arrays.asList("Brit", "Swede", "Dane", "Norwegian", "German"));
+        List<String> h = new ArrayList<>(Arrays.asList("White", "Green", "Yellow", "Blue", "Red"));
+        List<String> b = new ArrayList<>(Arrays.asList("Tea", "Coffee", "Milk", "Beer", "Water"));
+        List<String> c = new ArrayList<>(Arrays.asList("Pall Mall", "Dunhill", "Blends", "Bluemasters", "Prince"));
+        List<String> p = new ArrayList<>(Arrays.asList("Dogs", "Birds", "Cat", "Horse", "Fish"));
+        List<String> d = new ArrayList<>(Arrays.asList("1","2","3","4","5"));
+
+        // Creation of hashmap
+        for (int i = 1; i <= 5; i++) {
+            for (int j = 1; j <= 5; j++) {
+                printing.put("n" + i + j,n.get(i-1) + " is in house " + d.get(j-1));
+                printing.put("h" + i + j,h.get(i-1) + " is in house " + d.get(j-1));
+                printing.put("b" + i + j,b.get(i-1) + " is in house " + d.get(j-1));
+                printing.put("c" + i + j,c.get(i-1) + " is in house " + d.get(j-1));
+                printing.put("p" + i + j,p.get(i-1) + " is in house " + d.get(j-1));
+            }
+        }
+
+        Set<Prop> props = tau.getTau();
+        StringBuilder s = new StringBuilder();
+        for (Prop pr : props) {
+            assert printing.get(pr.toString()) != null;
+            s.append(printing.get(pr.toString())).append("\n");
+        }
+        System.out.println(s);
     }
 }
