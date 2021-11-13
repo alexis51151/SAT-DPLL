@@ -23,7 +23,7 @@ public class EinsteinPuzzle {
                 }
                 clauses.add(new Clause(set));
             }
-//             Each house has at most one _
+            // Each house has at most one _
             for (int i = 1; i <= N; i++) {
                 for (int k = 1; k <= N; k++) {
                     for (int j = 1; j < k; j++) {
@@ -186,5 +186,16 @@ public class EinsteinPuzzle {
             s.append(printing.get(pr.toString())).append("\n");
         }
         System.out.println(s);
+    }
+
+    public static void main(String[] args) {
+        EinsteinPuzzle puzzle = new EinsteinPuzzle();
+        CNF cnf = puzzle.getCnf();
+        DPLL solver = new DPLL(puzzle.getAP());
+        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        System.out.println(cnf);
+        System.out.println(tau);
+        EinsteinPuzzle.printTruthAssignement(tau);
+
     }
 }
