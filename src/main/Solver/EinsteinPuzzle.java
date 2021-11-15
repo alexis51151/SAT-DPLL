@@ -111,18 +111,30 @@ public class EinsteinPuzzle {
         return new DNF(disjunctions);
     }
 
+//    public DNF leftHouse(String symbol1, String symbol2) {
+//        List<List<Literal>> disjunctions = new ArrayList<>();
+//        for (int i = 1; i <= 5; i++) {
+//            for (int j = 1; j < i; j++) {
+//                List<Literal> conjunction = new ArrayList<>();
+//                conjunction.add(new Literal(symbol1 + i, false));
+//                conjunction.add(new Literal(symbol2 + j, false));
+//                disjunctions.add(conjunction);
+//            }
+//        }
+//        return new DNF(disjunctions);
+//    }
+
     public DNF leftHouse(String symbol1, String symbol2) {
         List<List<Literal>> disjunctions = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            for (int j = 1; j < i; j++) {
+        for (int i = 2; i <= 5; i++) {
                 List<Literal> conjunction = new ArrayList<>();
                 conjunction.add(new Literal(symbol1 + i, false));
-                conjunction.add(new Literal(symbol2 + j, false));
+                conjunction.add(new Literal(symbol2 + (i-1), false));
                 disjunctions.add(conjunction);
-            }
         }
         return new DNF(disjunctions);
     }
+
 
     public DNF atomicHouse(String symbol) {
         List<List<Literal>> disjunctions = new ArrayList<>();
