@@ -21,12 +21,12 @@ public class DPLL implements SATSolver {
     public DPLL(List<Prop> props) {
         this.props = props;
         //  By default, random choice
-        this.heuristic = RandomChoice.create(props);
+        this.heuristic = new RandomChoice();
     }
 
     public DPLL(List<Prop> props, Heuristic heuristic) {
         this.props = props;
-        this.heuristic = Heuristic.create();
+        this.heuristic = heuristic;
     }
 
 
@@ -34,11 +34,22 @@ public class DPLL implements SATSolver {
         return solve(phi, DPLL.create(props));
     }
 
+    /**
+     * Satisfiability wrapper function.
+     * @param phi   Formula to satisfy.
+     * @return      Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
+     */
     public TruthAssignment SATTruthAssignement(Form phi) {
         return solve(phi, DPLL.create(props), new TruthAssignment(new HashSet<>()));
     }
 
-
+    /**
+     * Satisfiability with truth assignement solver function.
+     * @param phi   Formula to satisfy.
+     * @param AP    Set of propositions in phi.
+     * @param tau   Truth assignment constructed.
+     * @return Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
+     */
     public TruthAssignment solve(Form phi, List<Prop> AP, TruthAssignment tau) {
         // Base cases
         if (AP.size() == 0 || phi instanceof ConstForm || (phi instanceof CNF && ((CNF) phi).nbClauses() == 0)) {
@@ -79,7 +90,12 @@ public class DPLL implements SATSolver {
     }
 
 
-
+    /**
+     * Satisfiability solver function.
+     * @param phi   Formula to satisfy.
+     * @param AP    Set of propositions in phi.
+     * @return Satisfiable (=true) or Unsatisfiable (=false).
+     */
     public Boolean solve(Form phi, List<Prop> AP) {
         // Base case
         if (AP.size() == 0 || phi instanceof ConstForm) {
@@ -110,24 +126,6 @@ public class DPLL implements SATSolver {
         Form theta = phi.substitute(p.getSymbol(), !b);
         return solve(theta, DPLL.create(AP));
 
-    }
-
-    // Random choice of AP and boolean value
-    public Pair<Prop, Boolean> chooseFirstClause(List<Clause> C, CNF phi, List<Prop> AP) {
-        Literal l = C.get(0).getLiterals().get(0);
-        AP.remove(l.getProp());
-        phi.removeClause(C.get(0));
-        if (l.isNegative())
-            return new Pair<>(l.getProp(), false);
-        return new Pair<>(l.getProp(), true);
-    }
-
-    // Random choice of AP and boolean value
-    public Pair<Prop, Boolean> chooseFirstProp(List<Prop> AP) {
-        Prop p = AP.get(0);
-        AP.remove(p);
-        Boolean c = true;
-        return new Pair<>(p,c);
     }
 
 

@@ -4,20 +4,8 @@ import Solver.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class RandomChoice extends Heuristic {
-
-    private final Random rand;   // Random generator
-    List<Prop> AP;
-
-    public RandomChoice() {
-        this.rand = new Random();
-    }
-
-    public RandomChoice(int seed) {
-        this.rand = new Random(seed);
-    }
+public class FirstChoice extends Heuristic{
 
     @Override
     public Pair<Prop, Boolean> unitPreferenceRule(CNF phi, List<Prop> AP) {
@@ -32,22 +20,21 @@ public class RandomChoice extends Heuristic {
             return null;
         }
 
-        //  Pick one clause randomly
-        Clause clause = unitClauses.get(rand.nextInt(unitClauses.size()));
-        phi.removeClause(clause);
-        Literal l = clause.getLiterals().get(0);
+        //  Pick the first unit clause
+        Literal l = unitClauses.get(0).getLiterals().get(0);
         AP.remove(l.getProp());
+        phi.removeClause(unitClauses.get(0));
         if (l.isNegative())
             return new Pair<>(l.getProp(), false);
         return new Pair<>(l.getProp(), true);
     }
 
-    // Random choice of AP and boolean value
+    // Choose first AP and boolean value at true
     @Override
     public Pair<Prop, Boolean> splittingRule(List<Prop> AP) {
-        Prop p = AP.get(rand.nextInt(AP.size()));
+        Prop p = AP.get(0);
         AP.remove(p);
-        Boolean c = rand.nextBoolean();
+        Boolean c = true;
         return new Pair<>(p,c);
     }
 
