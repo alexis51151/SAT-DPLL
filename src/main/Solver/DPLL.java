@@ -1,10 +1,14 @@
 package Solver;
 
+import Solver.Heuristics.Heuristic;
+import Solver.Heuristics.RandomChoice;
+
 import java.util.*;
 
 public class DPLL implements SATSolver {
     private final List<Prop> props; // World definition
     private final Random rand = new Random();   // Random generator
+    private final Heuristic heuristic;
 
     public Boolean eval(Form phi, TruthAssignment tau) {
         return phi.eval(tau);
@@ -16,7 +20,15 @@ public class DPLL implements SATSolver {
 
     public DPLL(List<Prop> props) {
         this.props = props;
+        //  By default, random choice
+        this.heuristic = RandomChoice.create(props);
     }
+
+    public DPLL(List<Prop> props, Heuristic heuristic) {
+        this.props = props;
+        this.heuristic = Heuristic.create();
+    }
+
 
     public Boolean SAT(Form phi) {
         return solve(phi, DPLL.create(props));
@@ -26,6 +38,7 @@ public class DPLL implements SATSolver {
         return solve(phi, DPLL.create(props), new TruthAssignment(new HashSet<>()));
     }
 
+
     public TruthAssignment solve(Form phi, List<Prop> AP, TruthAssignment tau) {
         // Base cases
         if (AP.size() == 0 || phi instanceof ConstForm || (phi instanceof CNF && ((CNF) phi).nbClauses() == 0)) {
@@ -34,7 +47,7 @@ public class DPLL implements SATSolver {
 
         assert phi instanceof CNF;
         // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi, AP);
+        Pair<Prop, Boolean> choice = heuristic.unitPreferenceRule((CNF) phi, AP);
         if (choice != null) {
             Prop p = choice.a;
             Boolean b = choice.b;
@@ -48,7 +61,7 @@ public class DPLL implements SATSolver {
         }
 
         // Splitting Rule
-        choice = chooseRandom(AP);
+        choice = heuristic.splittingRule(AP);
         Prop p = choice.a;
         Boolean b = choice.b;
 
@@ -75,7 +88,7 @@ public class DPLL implements SATSolver {
 
         assert phi instanceof CNF;
         // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = unitPreferenceRule((CNF) phi, AP);
+        Pair<Prop, Boolean> choice = heuristic.unitPreferenceRule((CNF) phi, AP);
         if (choice != null) {
             Prop p = choice.a;
             Boolean b = choice.b;
@@ -84,7 +97,7 @@ public class DPLL implements SATSolver {
         }
 
         // Splitting Rule
-        choice = chooseRandom(AP);
+        choice = heuristic.splittingRule(AP);
         Prop p = choice.a;
         Boolean b = choice.b;
 
@@ -99,20 +112,6 @@ public class DPLL implements SATSolver {
 
     }
 
-    public Pair<Prop, Boolean> unitPreferenceRule(CNF phi, List<Prop> AP) {
-        List<Clause> unitClauses = new ArrayList<>();
-        for (Clause clause : phi.getClauses()) {
-            if (clause.getNbLiterals() == 1)
-                unitClauses.add(clause);
-        }
-
-        if (unitClauses.size() == 0){
-            return null;
-        }
-        return chooseRandomClause(unitClauses, phi, AP);
-//        return chooseFirstClause(unitClauses, phi, AP);
-    }
-
     // Random choice of AP and boolean value
     public Pair<Prop, Boolean> chooseFirstClause(List<Clause> C, CNF phi, List<Prop> AP) {
         Literal l = C.get(0).getLiterals().get(0);
@@ -121,27 +120,6 @@ public class DPLL implements SATSolver {
         if (l.isNegative())
             return new Pair<>(l.getProp(), false);
         return new Pair<>(l.getProp(), true);
-    }
-
-
-    // Random choice of AP and boolean value
-    public Pair<Prop, Boolean> chooseRandomClause(List<Clause> C, CNF phi, List<Prop> AP) {
-        Clause clause = C.get(rand.nextInt(C.size()));
-        phi.removeClause(clause);
-        Literal l = clause.getLiterals().get(0);
-        AP.remove(l.getProp());
-        if (l.isNegative())
-            return new Pair<>(l.getProp(), false);
-        return new Pair<>(l.getProp(), true);
-    }
-
-
-    // Random choice of AP and boolean value
-    public Pair<Prop, Boolean> chooseRandom(List<Prop> AP) {
-        Prop p = AP.get(rand.nextInt(AP.size()));
-        AP.remove(p);
-        Boolean c = rand.nextBoolean();
-        return new Pair<>(p,c);
     }
 
     // Random choice of AP and boolean value
