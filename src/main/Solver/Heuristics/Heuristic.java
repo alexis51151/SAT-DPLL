@@ -10,6 +10,6 @@ public abstract class Heuristic {
 
     public abstract Pair<Prop, Boolean> unitPreferenceRule(CNF phi, List<Prop> AP);
 
-    public abstract Pair<Prop, Boolean> splittingRule(List<Prop> AP);
+    public abstract Pair<Prop, Boolean> splittingRule(CNF phi, List<Prop> AP);
 
 }

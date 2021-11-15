@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomChoice extends Heuristic {
-
     private final Random rand;   // Random generator
-    List<Prop> AP;
 
     public RandomChoice() {
         this.rand = new Random();
@@ -44,11 +42,16 @@ public class RandomChoice extends Heuristic {
 
     // Random choice of AP and boolean value
     @Override
-    public Pair<Prop, Boolean> splittingRule(List<Prop> AP) {
+    public Pair<Prop, Boolean> splittingRule(CNF phi, List<Prop> AP) {
         Prop p = AP.get(rand.nextInt(AP.size()));
         AP.remove(p);
         Boolean c = rand.nextBoolean();
         return new Pair<>(p,c);
+    }
+
+    @Override
+    public String toString() {
+        return "random-choice heuristic";
     }
 
 }

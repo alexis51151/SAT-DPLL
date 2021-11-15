@@ -72,7 +72,7 @@ public class DPLL implements SATSolver {
         }
 
         // Splitting Rule
-        choice = heuristic.splittingRule(AP);
+        choice = heuristic.splittingRule((CNF) phi, AP);
         Prop p = choice.a;
         Boolean b = choice.b;
 
@@ -113,7 +113,7 @@ public class DPLL implements SATSolver {
         }
 
         // Splitting Rule
-        choice = heuristic.splittingRule(AP);
+        choice = heuristic.splittingRule((CNF) phi, AP);
         Prop p = choice.a;
         Boolean b = choice.b;
 

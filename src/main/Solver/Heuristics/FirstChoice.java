@@ -31,11 +31,16 @@ public class FirstChoice extends Heuristic{
 
     // Choose first AP and boolean value at true
     @Override
-    public Pair<Prop, Boolean> splittingRule(List<Prop> AP) {
+    public Pair<Prop, Boolean> splittingRule(CNF phi, List<Prop> AP) {
         Prop p = AP.get(0);
         AP.remove(p);
         Boolean c = true;
         return new Pair<>(p,c);
+    }
+
+    @Override
+    public String toString() {
+        return "first-choice heuristic";
     }
 
 }
