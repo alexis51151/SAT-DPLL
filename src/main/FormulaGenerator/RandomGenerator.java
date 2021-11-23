@@ -25,6 +25,7 @@ public class RandomGenerator {
             props.add(new Prop("x" + i));
         }
         this.props = props;
+        rand = new Random();
         assert N == this.props.size();
     }
 
@@ -42,28 +43,26 @@ public class RandomGenerator {
         // Clauses construction
         List<Clause> clauses = new ArrayList<>();
         for (int i = 0; i < L; i++) {
-            for (int j = 0; j < 3; j++) {
-                // Consider Prop as a circular list
-                int k = rand.nextInt(N-1);  // Random integer between 0 and N-1: index in props
-                Literal x, y, z;
-                if (k < N-2) {
+            // Consider Prop as a circular list
+            int k = rand.nextInt(N-1);  // Random integer between 0 and N-1: index in props
+            Literal x, y, z;
+            if (k < N-2) {
+                x = new Literal(props.get(k), rand.nextBoolean());
+                y = new Literal(props.get(k+1), rand.nextBoolean());
+                z = new Literal(props.get(k+2), rand.nextBoolean());
+            } else {
+                if (k == N-2) {
                     x = new Literal(props.get(k), rand.nextBoolean());
                     y = new Literal(props.get(k+1), rand.nextBoolean());
-                    z = new Literal(props.get(k+2), rand.nextBoolean());
-                } else {
-                    if (k == N-2) {
-                        x = new Literal(props.get(k), rand.nextBoolean());
-                        y = new Literal(props.get(k+1), rand.nextBoolean());
-                        z = new Literal(props.get(0), rand.nextBoolean());
-                    } else  {
-                        x = new Literal(props.get(k), rand.nextBoolean());
-                        y = new Literal(props.get(0), rand.nextBoolean());
-                        z = new Literal(props.get(1), rand.nextBoolean());
-                    }
+                    z = new Literal(props.get(0), rand.nextBoolean());
+                } else  {
+                    x = new Literal(props.get(k), rand.nextBoolean());
+                    y = new Literal(props.get(0), rand.nextBoolean());
+                    z = new Literal(props.get(1), rand.nextBoolean());
                 }
-                assert x != y && x != z && y != z;
-                clauses.add(new Clause(new ArrayList<>(Arrays.asList(x,y,z))));
             }
+            assert x != y && x != z && y != z;
+            clauses.add(new Clause(new ArrayList<>(Arrays.asList(x,y,z))));
         }
         return new CNF(clauses);
     }

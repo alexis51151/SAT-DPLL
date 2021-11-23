@@ -29,4 +29,10 @@ class RandomGeneratorTest {
     }
 
 
+    @Test
+    void generate3SATTest4() {
+        RandomGenerator generator = new RandomGenerator(150,200);
+        CNF cnf = generator.generate3SAT();
+        assertEquals(200, cnf.getClauses().size());
+    }
 }

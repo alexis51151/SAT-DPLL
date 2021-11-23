@@ -37,7 +37,7 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q,r,s));
 
         // Test for satisfiability
-        assertTrue(solver.SAT(cnf));
+        assertNotNull(solver.SAT(cnf));
     }
 
     @Test
@@ -62,7 +62,7 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q));
 
         // Test for satisfiability
-        assertFalse(solver.SAT(cnf));
+        assertNull(solver.SAT(cnf));
     }
 
     @Test
@@ -88,12 +88,12 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q));
 
         // Test for satisfiability
-        assertTrue(solver.SAT(cnf1));
-        assertTrue(solver.SAT(cnf2));
+        assertNotNull(solver.SAT(cnf1));
+        assertNotNull(solver.SAT(cnf2));
     }
 
     @Test
-    void SATTruthAssignement1() {
+    void SATTest4() {
         // Definition of literals
         Prop p = new Prop("p");
         Prop q = new Prop("q");
@@ -117,7 +117,7 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q,r,s));
 
         // Test for satisfiability
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
         System.out.println(tau);
         assertTrue(tau.equals(new TruthAssignment(new HashSet<>(Arrays.asList(p,q,s))))
                 || tau.equals(new TruthAssignment(new HashSet<>(Arrays.asList(p,q,r,s))))
@@ -126,7 +126,7 @@ class DPLLTest {
     }
 
     @Test
-    void SATTruthAssignement2() {
+    void SATTest5() {
         // Definition of literals
         Prop p = new Prop("p");
         Prop q = new Prop("q");
@@ -147,12 +147,12 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q));
 
         // Test for satisfiability
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
         assertNull(tau);
     }
 
     @Test
-    void SATTruthAssignement3() {
+    void SATTest6() {
         // Definition of literals
         Prop p = new Prop("p");
         Prop q = new Prop("q");
@@ -174,8 +174,8 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q));
 
         // Test for satisfiability
-        TruthAssignment tau1 = solver.SATTruthAssignement(cnf1);
-        TruthAssignment tau2 = solver.SATTruthAssignement(cnf2);
+        TruthAssignment tau1 = solver.SAT(cnf1);
+        TruthAssignment tau2 = solver.SAT(cnf2);
         System.out.println(tau1);
         System.out.println(tau2);
 
@@ -184,7 +184,7 @@ class DPLLTest {
     }
 
     @Test
-    void SATTruthAssignement4() {
+    void SATTest7() {
         // Definition of literals
         Prop p = new Prop("p");
         Prop q = new Prop("q");
@@ -206,12 +206,12 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(p,q,r));
 
         // Test for satisfiability
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
         System.out.println(tau);
     }
 
     @Test
-    void SATTruthAssignement5() {
+    void SATTest8() {
         // Definition of literals
         Prop n11= new Prop("n11");
         Prop n12 = new Prop("n12");
@@ -234,13 +234,13 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(n11, n12, n21, n22));
 
         // Test for satisfiability
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
         System.out.println(cnf);
         System.out.println(tau);
     }
 
     @Test
-    void SATTruthAssignement6() {
+    void SATTest9() {
         // Definition of literals
         Prop n11= new Prop("n11");
         Prop n12 = new Prop("n12");
@@ -263,7 +263,7 @@ class DPLLTest {
         DPLL solver = new DPLL(Arrays.asList(n11, n12, n21, n22));
 
         // Test for satisfiability
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
         System.out.println(cnf);
         System.out.println(tau);
     }

@@ -1,27 +1,20 @@
-package Solver;
+package Solver.Heuristics;
 
+import Solver.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EinsteinPuzzleTest {
-
-    @Test
-    void getCnf() {
-        EinsteinPuzzle puzzle = new EinsteinPuzzle();
-        CNF cnf = puzzle.getCnf();
-        System.out.println(cnf);
-    }
+public class JeroslowWangTest {
 
     @Test
     void solveEinsteinPuzzle() {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
-        DPLL solver = new DPLL(puzzle.getAP());
+        DPLL solver = new DPLL(puzzle.getAP(), new JeroslowWang());
         TruthAssignment tau = solver.SAT(cnf);
 //        System.out.println(cnf);
 //        System.out.println(tau);
@@ -35,4 +28,5 @@ class EinsteinPuzzleTest {
         EinsteinPuzzle.printTruthAssignement(tau);
         assertEquals(expected, tau);
     }
+
 }

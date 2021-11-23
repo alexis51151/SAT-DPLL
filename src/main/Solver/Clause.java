@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Clause implements Form{
-    private List<Literal> literals;
+public class Clause implements Form {
+    private final List<Literal> literals;
 
     public Clause(List<Literal> literals) {
+//        for (Literal l : literals) {
+//            l.getProp().addClause(this);
+//        }
         this.literals = literals;
     }
 
@@ -41,16 +44,16 @@ public class Clause implements Form{
             Form substitute = l.substitute(symbol, b);
             // If a disjunction is true, then the clause becomes true
             if (substitute instanceof ConstForm)  {
-                if (((ConstForm) substitute).get())
+                if (((ConstForm) substitute).get()) {
                     return new ConstForm(true);
-            } else {
-                // l does not contain symbol in its AP
-                substitute_literals.add(l);
+                } else {
+                    continue;
+                }
             }
+            substitute_literals.add(l);
         }
         if (substitute_literals.size() == 0)
-            // Empty set of clauses
-            return new ConstForm(false);
+            return new ConstForm(false);    // Empty set of clauses
         return new Clause(substitute_literals);
     }
 

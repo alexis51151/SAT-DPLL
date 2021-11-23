@@ -15,7 +15,7 @@ class FirstChoiceTest {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
         DPLL solver = new DPLL(puzzle.getAP(), new FirstChoice());
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
 //        System.out.println(cnf);
 //        System.out.println(tau);
         // {c21,b44,c44,h42,b25,n41,h25,p42,n24,p23,b51,b33,c32,b12,c55,h53,h31,c13,h14,n55,p31,n32,n13,p55,p14}

@@ -94,5 +94,18 @@ class ClauseTest {
         assertEquals(f, new ConstForm(true));
     }
 
+//    @Test
+//    void pointersTest4() {
+//        Prop p = new Prop("p");
+//        Prop q = new Prop("q");
+//        Literal p_l = new Literal(p, false);
+//        Literal notq_l = new Literal(q, true);
+//        Clause clause = new Clause(new ArrayList<>(Arrays.asList(p_l,notq_l)));
+//        assertEquals(new ArrayList<>(List.of(clause)), p.getPosClauses());
+//        assertEquals(new ArrayList<>(), p.getNegClauses());
+//        assertEquals(new ArrayList<>(List.of(clause)), q.getNegClauses());
+//        assertEquals(new ArrayList<>(), q.getPosClauses());
+//    }
+
 
 }

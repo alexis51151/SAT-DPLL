@@ -36,13 +36,12 @@ public class CNF implements Form{
     @Override
     public Form substitute(String symbol, Boolean b) {
         List<Clause> substituted_clauses = new ArrayList<>();
-        for (Clause clause : clauses){
+        for (Clause clause : clauses) {
             Form substitute = clause.substitute(symbol, b);
             assert (substitute instanceof ConstForm || substitute instanceof Clause);
             if (substitute instanceof ConstForm){
-                // If empty set of clauses
                 if (!((ConstForm) substitute).get())
-                    return new ConstForm(false);
+                return substitute;
             } else {
                 substituted_clauses.add((Clause) substitute);
             }

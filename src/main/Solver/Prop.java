@@ -1,5 +1,7 @@
 package Solver;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Prop implements Form {
@@ -43,6 +45,5 @@ public class Prop implements Form {
     public int hashCode() {
         return Objects.hash(getSymbol());
     }
-
 
 }

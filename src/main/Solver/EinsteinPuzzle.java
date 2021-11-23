@@ -4,7 +4,7 @@ import java.util.*;
 
 public class EinsteinPuzzle {
     private final CNF cnf;
-    private List<Prop> AP = new ArrayList<>();
+    private final List<Prop> AP = new ArrayList<>();
 
     public EinsteinPuzzle() {
         List<Clause> clauses = new ArrayList<>();
@@ -111,19 +111,6 @@ public class EinsteinPuzzle {
         return new DNF(disjunctions);
     }
 
-//    public DNF leftHouse(String symbol1, String symbol2) {
-//        List<List<Literal>> disjunctions = new ArrayList<>();
-//        for (int i = 1; i <= 5; i++) {
-//            for (int j = 1; j < i; j++) {
-//                List<Literal> conjunction = new ArrayList<>();
-//                conjunction.add(new Literal(symbol1 + i, false));
-//                conjunction.add(new Literal(symbol2 + j, false));
-//                disjunctions.add(conjunction);
-//            }
-//        }
-//        return new DNF(disjunctions);
-//    }
-
     public DNF leftHouse(String symbol1, String symbol2) {
         List<List<Literal>> disjunctions = new ArrayList<>();
         for (int i = 2; i <= 5; i++) {
@@ -204,7 +191,7 @@ public class EinsteinPuzzle {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
         DPLL solver = new DPLL(puzzle.getAP());
-        TruthAssignment tau = solver.SATTruthAssignement(cnf);
+        TruthAssignment tau = solver.SAT(cnf);
         System.out.println(cnf);
         System.out.println(tau);
         EinsteinPuzzle.printTruthAssignement(tau);

@@ -1,7 +1,7 @@
 package Solver;
 
-import Solver.Heuristics.Heuristic;
-import Solver.Heuristics.RandomChoice;
+import FormulaGenerator.RandomGenerator;
+import Solver.Heuristics.*;
 
 import java.util.*;
 
@@ -30,35 +30,57 @@ public class DPLL implements SATSolver {
     }
 
 
-    public Boolean SAT(Form phi) {
-        return solve(phi, DPLL.create(props));
-    }
-
     /**
      * Satisfiability wrapper function.
      * @param phi   Formula to satisfy.
      * @return      Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
      */
-    public TruthAssignment SATTruthAssignement(Form phi) {
+    public TruthAssignment SAT(CNF phi) {
         return solve(phi, DPLL.create(props), new TruthAssignment(new HashSet<>()));
     }
+
+
+
+    public Pair<Prop, Boolean> unitPreferenceRule(CNF phi, List<Prop> AP) {
+        //  Find unit clauses
+        List<Clause> unitClauses = new ArrayList<>();
+        for (Clause clause : phi.getClauses()) {
+            if (clause.getNbLiterals() == 1)
+                unitClauses.add(clause);
+        }
+
+        if (unitClauses.size() == 0){
+            return null;
+        }
+
+        //  Pick one clause randomly
+        Clause clause = unitClauses.get(rand.nextInt(unitClauses.size()));
+        phi.removeClause(clause);
+        Literal l = clause.getLiterals().get(0);
+        AP.remove(l.getProp());
+        if (l.isNegative())
+            return new Pair<>(l.getProp(), false);
+        return new Pair<>(l.getProp(), true);
+    }
+
+
 
     /**
      * Satisfiability with truth assignement solver function.
      * @param phi   Formula to satisfy.
-     * @param AP    Set of propositions in phi.
+     * @param unassigned    Set of unassigned propositions in phi.
      * @param tau   Truth assignment constructed.
      * @return Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
      */
-    public TruthAssignment solve(Form phi, List<Prop> AP, TruthAssignment tau) {
+    public TruthAssignment solve(Form phi, List<Prop> unassigned, TruthAssignment tau) {
         // Base cases
-        if (AP.size() == 0 || phi instanceof ConstForm || (phi instanceof CNF && ((CNF) phi).nbClauses() == 0)) {
+        if (unassigned.size() == 0 || phi instanceof ConstForm || (phi instanceof CNF && ((CNF) phi).nbClauses() == 0)) {
             return eval(phi, new TruthAssignment(new HashSet<>())) ? tau : null;
         }
 
         assert phi instanceof CNF;
         // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = heuristic.unitPreferenceRule((CNF) phi, AP);
+        Pair<Prop, Boolean> choice = heuristic.unitPreferenceRule((CNF) phi, unassigned);
         if (choice != null) {
             Prop p = choice.a;
             Boolean b = choice.b;
@@ -66,67 +88,35 @@ public class DPLL implements SATSolver {
             if (b) {
                 Set<Prop> new_props = tau.getTau();
                 new_props.add(p);
-                return solve(psi, DPLL.create(AP), new TruthAssignment(new_props));
+                return solve(psi, unassigned, new TruthAssignment(new_props));
             }
-            return solve(psi, DPLL.create(AP), tau);
+            return solve(psi, unassigned, tau);
         }
 
         // Splitting Rule
-        choice = heuristic.splittingRule((CNF) phi, AP);
+        choice = heuristic.splittingRule((CNF) phi, unassigned);
         Prop p = choice.a;
         Boolean b = choice.b;
 
         // 1st option
         Form psi = phi.substitute(p.getSymbol(), b);
-        TruthAssignment new_tau = solve(psi, DPLL.create(AP), tau.create(choice));
+        TruthAssignment new_tau = solve(psi, DPLL.create(unassigned), tau.create(choice));
         if (new_tau != null){
             return new_tau;
         }
-
         // 2nd option
         choice.b = !choice.b;
         Form theta = phi.substitute(p.getSymbol(), !b);
-        return solve(theta, DPLL.create(AP), tau.create(choice));
+        tau.add(choice);
+        return solve(theta, unassigned, tau);
     }
 
 
-    /**
-     * Satisfiability solver function.
-     * @param phi   Formula to satisfy.
-     * @param AP    Set of propositions in phi.
-     * @return Satisfiable (=true) or Unsatisfiable (=false).
-     */
-    public Boolean solve(Form phi, List<Prop> AP) {
-        // Base case
-        if (AP.size() == 0 || phi instanceof ConstForm) {
-            return eval(phi, new TruthAssignment(new HashSet<>()));
-        }
-
-        assert phi instanceof CNF;
-        // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = heuristic.unitPreferenceRule((CNF) phi, AP);
-        if (choice != null) {
-            Prop p = choice.a;
-            Boolean b = choice.b;
-            Form psi = phi.substitute(p.getSymbol(), b);
-            return solve(psi, DPLL.create(AP));
-        }
-
-        // Splitting Rule
-        choice = heuristic.splittingRule((CNF) phi, AP);
-        Prop p = choice.a;
-        Boolean b = choice.b;
-
-        // 1st option
-        Form psi = phi.substitute(p.getSymbol(), b);
-        if (solve(psi, DPLL.create(AP)))
-            return true;
-
-        // 2nd option
-        Form theta = phi.substitute(p.getSymbol(), !b);
-        return solve(theta, DPLL.create(AP));
-
+    public static void main(String[] args) {
+        RandomGenerator g = new RandomGenerator(40,60);
+        CNF cnf = g.generate3SAT();
+        DPLL solver = new DPLL(g.getProps(), new JeroslowWang());
+        solver.SAT(cnf);
     }
-
 
 }

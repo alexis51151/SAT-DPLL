@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class TruthAssignment {
-    private final Set<Prop> tau; // List of props that are evaluated as 1
+    private Set<Prop> tau; // List of props that are evaluated as 1
 
     public TruthAssignment(Set<Prop> tau) {
         this.tau = tau;
@@ -55,6 +55,14 @@ public class TruthAssignment {
             props.add(p);
         }
         return new TruthAssignment(props);
+    }
+
+    public void add(Pair<Prop, Boolean> choice) {
+        Prop p = choice.a;
+        Boolean b = choice.b;
+        if (b) {
+            tau.add(p);
+        }
     }
 }
 
