@@ -7,8 +7,17 @@ import java.util.Objects;
 
 public class CNF implements Form{
     private List<Clause> clauses;
+    private List<Literal> unitClauses = new ArrayList<>();
 
     public CNF(List<Clause> clauses) {
+        for (Clause c : clauses) {
+            // Add a pointer to unitClauses for all clauses
+            c.setUnitClauses(unitClauses);
+            // If a clause is initially unit, add the Literal to unitClauses
+            if (c.getNbLiterals() == 1) {
+                unitClauses.add(c.getFirstLiteral());
+            }
+        }
         this.clauses = clauses;
     }
 
@@ -73,5 +82,9 @@ public class CNF implements Form{
             s.append(clause.toString()).append("\n /\\ ");
         }
         return s.substring(0, s.length() - 3);
+    }
+
+    public List<Literal> getUnitClauses() {
+        return unitClauses;
     }
 }

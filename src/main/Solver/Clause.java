@@ -6,11 +6,14 @@ import java.util.Objects;
 
 public class Clause implements Form {
     private final List<Literal> literals;
+    private int nbLiterals = 0;
+    private List<Literal> unitClauses = new ArrayList<>();
 
     public Clause(List<Literal> literals) {
-//        for (Literal l : literals) {
-//            l.getProp().addClause(this);
-//        }
+        for (Literal l : literals) {
+            l.getProp().addClause(this, !l.isNegative());
+            this.nbLiterals++;
+        }
         this.literals = literals;
     }
 
@@ -18,12 +21,13 @@ public class Clause implements Form {
         return literals;
     }
 
-    public int getNbLiterals() {
-        return literals.size();
+
+    public Literal getFirstLiteral() {
+        return literals.get(0);
     }
 
-    public void addLiteral(Literal l) {
-        literals.add(l);
+    public int getNbLiterals() {
+        return nbLiterals;
     }
 
     @Override
@@ -80,4 +84,17 @@ public class Clause implements Form {
         s.append(")");
         return s.toString();
     }
+
+    public void setUnitClauses(List<Literal> unitClauses) {
+        this.unitClauses = unitClauses;
+    }
+
+    public void decrNbLiterals() {
+        this.nbLiterals--;
+    }
+
+    public void incrNbLiterals() {
+        this.nbLiterals++;
+    }
+
 }

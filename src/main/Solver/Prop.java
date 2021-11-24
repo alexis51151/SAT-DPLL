@@ -6,6 +6,9 @@ import java.util.Objects;
 
 public class Prop implements Form {
     private final String symbol;
+    private final List<Clause> posClauses = new ArrayList<>();
+    private final List<Clause> negClauses = new ArrayList<>();
+
 
     public String getSymbol() {
         return symbol;
@@ -46,4 +49,36 @@ public class Prop implements Form {
         return Objects.hash(getSymbol());
     }
 
+    public void addClause(Clause c, Boolean b) {
+        if (b) {
+            this.posClauses.add(c);
+        } else {
+            this.negClauses.add(c);
+        }
+    }
+
+    public Boolean propagate(Boolean b) {
+        List<Clause> clauses;
+        if (b) {
+            clauses = negClauses;
+        } else {
+            clauses = posClauses;
+        }
+        for (Clause c : clauses) {
+            assert c.getNbLiterals() <= 3;
+            // Conflict
+            if (c.getNbLiterals() == 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public List<Clause> getPosClauses() {
+        return posClauses;
+    }
+
+    public List<Clause> getNegClauses() {
+        return negClauses;
+    }
 }

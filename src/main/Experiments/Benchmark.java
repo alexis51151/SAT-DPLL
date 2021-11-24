@@ -11,6 +11,8 @@ import Solver.Heuristics.TwoClauses;
 import Solver.Prop;
 import Solver.TruthAssignment;
 
+import java.io.*;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.*;
 import java.lang.Math.*;
@@ -54,7 +56,7 @@ public class Benchmark {
         System.out.println("Maximum nb of vars supported by random heuristic: N = " + N);
     }
 
-    public static float SATProbability(int n, int l, int nb) {
+    public static float SATProbability(int n, int l, int nb, int timeout) {
         RandomGenerator generator = new RandomGenerator(n, l);
         List<Prop> props = generator.getProps();
         Heuristic heuristic = new JeroslowWang();
@@ -62,38 +64,63 @@ public class Benchmark {
 
         float sat = 0;
         for (int i = 0; i < nb; i++) {
+//            if (i % 10 == 0) {
+            System.out.println("i = " + i);
+//            }
             CNF phi = generator.generate3SAT();
-            TruthAssignment tau = solver.SAT(phi);
-            if (tau != null) {
-                sat++;
+            ExecutorService executor = Executors.newCachedThreadPool();
+            Callable<TruthAssignment> task = new Callable<TruthAssignment>() {
+                public TruthAssignment call() {
+                    return solver.SAT(phi);
+                }
+            };
+            Future<TruthAssignment> future = executor.submit(task);
+            try {
+                TruthAssignment tau = future.get(timeout, TimeUnit.SECONDS);
+                if (tau != null) {
+                    sat++;
+                }
+            } catch (TimeoutException | InterruptedException | ExecutionException ex) {
+                // handle the timeout
             }
         }
         return sat / nb;
     }
 
-    public static void printSATProbability() {
+    public static void printSATProbability() throws IOException {
+        /* Files to write the probabilities */
+        File out100 = new File("probs_N100.txt");
+        FileWriter outr100 = new FileWriter(out100);
         float p100, p150;
 
         // N = 100
-        for (float r = 1; r <= 3; r+= 0.2) {
-            int N = 50;
-            p100 = SATProbability(N, (int) (N*r), 100);
-            System.out.println("Probability of satisfiability of random formulas for L/N = " + r + " for N = 100 is equal to " + p100);
+        for (float r = 3; r <= 6; r+= 0.2) {
+            int N = 100;
+            System.out.println("--------r = " + r + "--------");
+            p100 = SATProbability(N, (int) (N*r), 100,20);
+            outr100.write(new DecimalFormat("#.##").format(p100) + "\n");
+//            System.out.println("Probability of satisfiability of random formulas for L/N = " + r + " for N = 100 is equal to " + p100);
         }
+        outr100.close();
 
-//        // N = 150
-//        for (int r = 3; r < 6; r+= 0.2) {
-//            int N = 150;
-//            p150 = SATProbability(N, r*N, 10);
-//            System.out.println("Probability of satisfiability of random formulas for L/N = " + r + " for N = 150 is equal to " + p150);
-//        }
+        File out150 = new File("probs_N150.txt");
+        FileWriter outr150 = new FileWriter(out150);
+        // N = 150
+        for (float r = 3; r <= 6; r+= 0.2) {
+            int N = 150;
+            System.out.println("--------r = " + r + "--------");
+            p150 = SATProbability(N, (int) (N*r), 100,20);
+            outr150.write(new DecimalFormat("#.##").format(p150) + "\n");
+//            System.out.println("Probability of satisfiability of random formulas for L/N = " + r + " for N = 100 is equal to " + p150);
+        }
+        outr150.close();
     }
 
 
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        printMaxPropsSupported(new TwoClauses());
         printSATProbability();
     }
