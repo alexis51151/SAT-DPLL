@@ -5,7 +5,6 @@ import java.util.Objects;
 public class Literal implements Form{
     private final Prop prop;
     private final boolean negative;
-    private Boolean value = null;
 
     public Literal(Prop p, boolean negative) {
         this.prop = p;
@@ -25,13 +24,6 @@ public class Literal implements Form{
         return prop;
     }
 
-    public Boolean getValue() {
-        return value;
-    }
-
-    public void setValue(Boolean value) {
-        this.value = value;
-    }
 
     @Override
     public boolean eval(TruthAssignment tau) {

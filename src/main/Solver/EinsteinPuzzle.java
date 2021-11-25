@@ -5,12 +5,29 @@ import java.util.*;
 public class EinsteinPuzzle {
     private final CNF cnf;
     private final List<Prop> AP = new ArrayList<>();
+    private final HashMap<String, Prop> props = new HashMap<>();
 
     public EinsteinPuzzle() {
         List<Clause> clauses = new ArrayList<>();
         int N = 5;
         // Names for APs
         Set<String> sets = new HashSet<>(Arrays.asList("n", "h", "b", "c", "p"));
+//        Set<String> sets = new HashSet<>(Arrays.asList("h", "b"));
+
+        // Create AP List
+        for (String prefix : sets) {
+            for (int i = 1; i <= N; i++) {
+                List<Literal> set = new ArrayList<>();
+                for (int j = 1; j <= N; j++) {
+                    String symbol = prefix + i + j;
+                    props.put(symbol, new Prop(symbol));
+                }
+            }
+        }
+
+        for (Map.Entry<String, Prop> couple : props.entrySet()) {
+            AP.add(couple.getValue());
+        }
         // Basic problem
         for (String prefix : sets) {
             // Each house has at least one _
@@ -18,8 +35,7 @@ public class EinsteinPuzzle {
                 List<Literal> set = new ArrayList<>();
                 for (int j = 1; j <= N; j++) {
                     String symbol = prefix + i + j;
-                    set.add(new Literal(symbol, false));
-                    AP.add(new Prop(symbol));
+                    set.add(new Literal(props.get(symbol), false));
                 }
                 clauses.add(new Clause(set));
             }
@@ -28,10 +44,10 @@ public class EinsteinPuzzle {
                 for (int k = 1; k <= N; k++) {
                     for (int j = 1; j < k; j++) {
                         List<Literal> newSet = new ArrayList<>();
-                        newSet.add(new Literal(prefix + Integer.toString(i) + Integer.toString(j
-                        ), true));
-                        newSet.add(new Literal(prefix + Integer.toString(i) + Integer.toString(k
-                        ), true));
+                        newSet.add(new Literal(props.get(prefix + Integer.toString(i) + Integer.toString(j
+                        )), true));
+                        newSet.add(new Literal(props.get(prefix + Integer.toString(i) + Integer.toString(k
+                        )), true));
                         clauses.add(new Clause(newSet));
                     }
                 }
@@ -40,24 +56,25 @@ public class EinsteinPuzzle {
                 for (int k = 1; k <= N; k++) {
                     for (int i = 1; i < k; i++) {
                         List<Literal> newSet = new ArrayList<>();
-                        newSet.add(new Literal(prefix + Integer.toString(i) + Integer.toString(j
-                        ), true));
-                        newSet.add(new Literal(prefix + Integer.toString(k) + Integer.toString(j
-                        ), true));
+                        newSet.add(new Literal(props.get(prefix + Integer.toString(i) + Integer.toString(j
+                        )), true));
+                        newSet.add(new Literal(props.get(prefix + Integer.toString(k) + Integer.toString(j
+                        )), true));
                         clauses.add(new Clause(newSet));
                     }
                 }
             }
         }
         CNF cnf = new CNF(clauses);
+
         // Hints
         // 1) "The Brit lives in the red house."
         DNF dnf1 = sameHouse("n1", "h5");
         cnf.addAll(dnf1.toCNF());
-        // 2) "The Swede keeps dogs as pets."
+//        // 2) "The Swede keeps dogs as pets."
         DNF dnf2 = sameHouse("n2", "p1");
         cnf.addAll(dnf2.toCNF());
-        // 3) "The Dane drinks tea."
+//        // 3) "The Dane drinks tea."
         DNF dnf3 = sameHouse("n3", "b1");
         cnf.addAll(dnf3.toCNF());
         // 4) "The green house is on the left of the white house."
@@ -104,29 +121,31 @@ public class EinsteinPuzzle {
         List<List<Literal>> disjunctions = new ArrayList<>();
         for (int j = 1; j <= 5; j++) {
             List<Literal> conjunction = new ArrayList<>();
-            conjunction.add(new Literal(symbol1 + j, false));
-            conjunction.add(new Literal(symbol2 + j, false));
+            conjunction.add(new Literal(props.get(symbol1 + j), false));
+            conjunction.add(new Literal(props.get(symbol2 + j), false));
             disjunctions.add(conjunction);
         }
         return new DNF(disjunctions);
     }
 
+
     public DNF leftHouse(String symbol1, String symbol2) {
         List<List<Literal>> disjunctions = new ArrayList<>();
         for (int i = 2; i <= 5; i++) {
-                List<Literal> conjunction = new ArrayList<>();
-                conjunction.add(new Literal(symbol1 + i, false));
-                conjunction.add(new Literal(symbol2 + (i-1), false));
-                disjunctions.add(conjunction);
+            List<Literal> conjunction = new ArrayList<>();
+            conjunction.add(new Literal(props.get(symbol1 + i), false));
+            conjunction.add(new Literal(props.get(symbol2 + (i-1)), false));
+            disjunctions.add(conjunction);
         }
         return new DNF(disjunctions);
     }
 
 
+
     public DNF atomicHouse(String symbol) {
         List<List<Literal>> disjunctions = new ArrayList<>();
         List<Literal> conjunction = new ArrayList<>();
-        conjunction.add(new Literal(symbol, false));
+        conjunction.add(new Literal(props.get(symbol), false));
         disjunctions.add(conjunction);
         return new DNF(disjunctions);
     }
@@ -135,16 +154,16 @@ public class EinsteinPuzzle {
         List<List<Literal>> disjunctions = new ArrayList<>();
         for (int j = 1; j <= 4; j++) {
             List<Literal> conjunction = new ArrayList<>();
-            conjunction.add(new Literal(symbol1 + j, false));
+            conjunction.add(new Literal(props.get(symbol1 + j), false));
             int k = j + 1;
-            conjunction.add(new Literal(symbol2 + k, false));
+            conjunction.add(new Literal(props.get(symbol2 + k), false));
             disjunctions.add(conjunction);
         }
         for (int j = 2; j <= 5; j++) {
             List<Literal> conjunction = new ArrayList<>();
-            conjunction.add(new Literal(symbol1 + j, false));
+            conjunction.add(new Literal(props.get(symbol1 + j), false));
             int k = j - 1;
-            conjunction.add(new Literal(symbol2 + k, false));
+            conjunction.add(new Literal(props.get(symbol2 + k), false));
             disjunctions.add(conjunction);
         }
         return new DNF(disjunctions);

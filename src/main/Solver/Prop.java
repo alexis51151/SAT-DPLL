@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class Prop implements Form {
     private final String symbol;
+    private Boolean value = null;
     private final List<Clause> posClauses = new ArrayList<>();
     private final List<Clause> negClauses = new ArrayList<>();
 
@@ -30,6 +31,15 @@ public class Prop implements Form {
         }
         return new Prop(this.getSymbol());
     }
+
+    public Boolean getValue() {
+        return value;
+    }
+
+    public void setValue(Boolean value) {
+        this.value = value;
+    }
+
 
     @Override
     public boolean eval(TruthAssignment tau) {

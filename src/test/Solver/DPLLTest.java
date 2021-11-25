@@ -398,7 +398,7 @@ class DPLLTest {
 
     @Test
     void solve_iterTest5() {
-        RandomGenerator generator = new RandomGenerator(3, 10);
+        RandomGenerator generator = new RandomGenerator(3, 6);
         CNF cnf = generator.generate3SAT();
         List<Prop> props = generator.getProps();
 
@@ -415,6 +415,53 @@ class DPLLTest {
         }
     }
 
+    @Test
+    void findBug() {
+        for (int n = 100; n < 150; n++) {
+            int l = 2*n;
+            for (int seed = 1; seed < 1000; seed++) {
+                for (int i = 0; i < 1; i++) {
+                    RandomGenerator generator =  new RandomGenerator(n, l,seed);
+                    CNF cnf = generator.generate3SAT();
+                    List<Prop> props = generator.getProps();
+
+                    // DPLL class
+                    DPLL solver = new DPLL(props);
+
+
+                    // Test for satisfiability
+                    HashMap<Prop, Boolean> tau = solver.solve_iter(cnf);
+                    if (tau != null && tau.size() != n) {
+                        System.out.println(cnf);
+                        for (Map.Entry<Prop, Boolean> deduction : tau.entrySet()) {
+                            Literal lit = new Literal(deduction.getKey(), !deduction.getValue());
+                            System.out.println(lit);
+                        }
+                        System.out.println(" i = " + i);
+                        System.out.println("N = " + n);
+                        System.out.println("Seed = " + seed);
+                        assert false;
+                    }
+                }
+            }
+        }
+
+    }
+
+    @Test
+    public void debug() {
+        RandomGenerator generator =  new RandomGenerator(4, 4, 11474);
+        CNF cnf = generator.generate3SAT();
+        List<Prop> props = generator.getProps();
+        DPLL solver = new DPLL(props);
+        HashMap<Prop, Boolean> tau = solver.solve_iter(cnf);
+        for (Map.Entry<Prop, Boolean> deduction : tau.entrySet()) {
+            Literal lit = new Literal(deduction.getKey(), !deduction.getValue());
+            System.out.println(lit);
+        }
+    }
+
+
 
 
     @Test
@@ -422,7 +469,12 @@ class DPLLTest {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
         DPLL solver = new DPLL(new ArrayList<>(puzzle.getAP()));
+        System.out.println(cnf);
         HashMap<Prop, Boolean> res = solver.solve_iter(cnf);
+//        for (Map.Entry<Prop, Boolean> deduction : res.entrySet()) {
+//            Literal l = new Literal(deduction.getKey(), !deduction.getValue());
+//            System.out.println(l);
+//        }
 //        System.out.println(cnf);
 //        System.out.println(tau);
         // {c21,b44,c44,h42,b25,n41,h25,p42,n24,p23,b51,b33,c32,b12,c55,h53,h31,c13,h14,n55,p31,n32,n13,p55,p14}

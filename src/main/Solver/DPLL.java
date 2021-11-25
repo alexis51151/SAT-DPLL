@@ -7,7 +7,7 @@ import java.util.*;
 
 public class DPLL implements SATSolver {
     private final List<Prop> props; // World definition
-    private final Random rand = new Random();   // Random generator
+    private final Random rand = new Random();   // Random generator 857
     private final Heuristic heuristic;
 
     public Boolean eval(Form phi, TruthAssignment tau) {
@@ -103,7 +103,6 @@ public class DPLL implements SATSolver {
             return deductions.a;
         }
 
-
         // Assign all the atomic propositions
         while (unassigned.size() != 0) {
             // Make a new decision
@@ -115,6 +114,11 @@ public class DPLL implements SATSolver {
             while (!deductions.b) {
                 Assignment a = assignments.pop();
                 while (a.flipped) {
+                    // unassign the flipped choice
+                    a.choice.a.setValue(null);
+                    if (!unassigned.contains(a.choice.a)) {
+                        unassigned.add(a.choice.a);
+                    }
                     backtrack(a, unassigned);
                     if (assignments.size() == 0) {
                         return null;
@@ -123,8 +127,9 @@ public class DPLL implements SATSolver {
                 }
                 backtrack(a, unassigned);
                 a.choice.b = !a.choice.b;
+                a.choice.a.setValue(a.choice.b);
                 deductions = unitPropagation(phi, a.choice, unassigned);
-                assignments.add(new Assignment(deductions.a, choice, true));
+                assignments.add(new Assignment(deductions.a, a.choice, true));
             }
         }
 
@@ -136,38 +141,35 @@ public class DPLL implements SATSolver {
         return tau;
     }
 
+
+
     public Pair<HashMap<Prop, Boolean>, Boolean>  unitPropagation(CNF phi, Pair<Prop, Boolean> choice, List<Prop> unassigned) {
-        // Conflict flag
-        boolean conflict = false;
-        // HashMap of all the deductions made
-        HashMap<Prop, Boolean> deductions = new HashMap<>();
-        // Stack of all the new choices to propagate
         Stack<Pair<Prop, Boolean>> stack = new Stack<>();
+        // HashMap of all the new deductions
+        HashMap<Prop, Boolean> deductions = new HashMap<>();
         // New unit Choices
         List<Literal> unitClauses = new ArrayList<>();
 
         if (choice != null) {
             stack.push(choice);
+        } else {
+            Iterator<Literal> itr = phi.getUnitClauses().iterator();
+            while (itr.hasNext()) {
+                Literal l = itr.next();
+                deductions.put(l.getProp(), !l.isNegative());
+                stack.push(new Pair<>(l.getProp(), !l.isNegative()));
+                unassigned.remove(l.getProp());
+                itr.remove();
+            }
         }
 
-        // Also add the unit choices into the stack (useful if it's the first unitPropagation)
-        Iterator<Literal> itr = phi.getUnitClauses().iterator();
-        while (itr.hasNext()) {
-            Literal l = itr.next();
-            deductions.put(l.getProp(), !l.isNegative());
-            stack.push(new Pair<>(l.getProp(), !l.isNegative()));
-            itr.remove();
-            unassigned.remove(l.getProp());
-        }
+        while (stack.size() != 0) {
+            Pair<Prop, Boolean> elt = stack.pop();
+            Prop p = elt.a;
+            Boolean b = elt.b;
+            p.setValue(b);
 
-        // Big loop to propagate the changes and find unit clauses
-        while (stack.size() > 0 && !conflict) {
-            // Update unitClauses
-            choice = stack.pop();
-            Prop p = choice.a;
-            Boolean b = choice.b;
             List<Clause> clauses;
-
             if (b) {
                 clauses = p.getNegClauses();
             } else {
@@ -175,42 +177,32 @@ public class DPLL implements SATSolver {
             }
 
             for (Clause c : clauses) {
-                assert c.getNbLiterals() <= 3;
-                // Conflict
-                if (c.getNbLiterals() == 1) {
-                    conflict = true;
-                    break;
-                }
-                // new unit clauses
-                if (c.getNbLiterals() == 2) {
-                    List<Literal> l = c.getLiterals();
-                    Literal lit = new Literal(p, b);
-                    if (l.get(0).equals(lit)) {
-                        l.remove(lit);
-                        l.add(l.size(), lit);
-                    }
-                    unitClauses.add(c.getFirstLiteral());
-                }
-                // new 2-clauses
-                if (c.getNbLiterals() == 3) {
-                    List<Literal> l = c.getLiterals();
-                    Literal lit = new Literal(p, b);
-                    if (l.get(0).equals(lit) || l.get(1).equals(lit) ) {
-                        l.remove(lit);
-                        l.add(l.size(), lit);
+                List<Literal> notFalseLiterals = new ArrayList<>();
+                // Nb of unassigned literals must be > 0
+                for (Literal l : c.getLiterals()) {
+                    if(l.getProp().getValue() == null || (l.getProp().getValue() != l.isNegative())) {
+                        notFalseLiterals.add(l);
                     }
                 }
-                c.decrNbLiterals();
+                if (notFalseLiterals.size() == 0) {
+                    return new Pair<>(deductions, false);
+                }
+                if (notFalseLiterals.size() == 1) {
+                    unitClauses.add(notFalseLiterals.get(0));
+                }
             }
 
             // Look at all unit clauses for conflict
-            itr = unitClauses.iterator();
+            Iterator<Literal> itr = unitClauses.iterator();
             while (itr.hasNext()) {
                 Literal l = itr.next();
-                if (deductions.containsKey(l.getProp())) {
-                    if (deductions.get(l.getProp()) == l.isNegative()) {
-                        conflict = true;
-                        break;
+                if (l.getProp().getValue() != null ) {
+                    if (l.getProp().getValue()  == l.isNegative()) {
+                        return new Pair<>(deductions, false);
+                    } else {
+                        // We already have deduced that earlier
+                        itr.remove();
+                        continue;
                     }
                 }
                 deductions.put(l.getProp(), !l.isNegative());
@@ -221,16 +213,6 @@ public class DPLL implements SATSolver {
                 itr.remove();
             }
         }
-
-        if (conflict) {
-            while (stack.size() > 0) {
-                choice = stack.pop();
-                // Remove the deductions that were not explored
-                deductions.remove(choice.a);
-            }
-            return new Pair<>(deductions, false);
-        }
-
         return new Pair<>(deductions, true);
     }
 
@@ -242,40 +224,12 @@ public class DPLL implements SATSolver {
     }
 
     public void backtrack(Assignment a, List<Prop> unassigned) {
-        HashMap<Prop, Boolean> deductions = a.tau;
-        Pair<Prop, Boolean> choice = a.choice;
-        // Modify the nbLiterals in clauses of the chosen var
-        Prop p = choice.a;
-        Boolean b = choice.b;
-        List<Clause> clauses;
-        if (b) {
-            clauses = p.getNegClauses();
-        } else {
-            clauses = p.getPosClauses();
-        }
-        for (Clause c : clauses) {
-            if (c.getNbLiterals() == 1) {
-                break;
+        for (Map.Entry<Prop, Boolean> deduction : a.tau.entrySet()) {
+            Prop p = deduction.getKey();
+            if (!unassigned.contains(p)) {
+                unassigned.add(p);
             }
-            c.incrNbLiterals();
-        }
-
-        for (Map.Entry<Prop, Boolean> deduction : deductions.entrySet()) {
-            p = deduction.getKey();
-            b = deduction.getValue();
-            // put p back in the unassigned list
-            unassigned.add(p);
-            if (b) {
-                clauses = p.getNegClauses();
-            } else {
-                clauses = p.getPosClauses();
-            }
-            for (Clause c : clauses) {
-                if (c.getNbLiterals() == 1) {
-                    break;
-                }
-                c.incrNbLiterals();
-            }
+            p.setValue(null);
         }
     }
 

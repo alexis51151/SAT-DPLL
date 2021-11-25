@@ -12,8 +12,7 @@ public class RandomGenerator {
     int K = 3;          // Nb of distinct literals per clause
     int L;              // Nb of clauses
     List<Prop> props;    // Set of variables
-    int seed = 1;       // Seed for randomization
-    Random rand = new Random(seed);
+    Random rand;
 
     public RandomGenerator(int n, int l) {
         N = n;
@@ -28,6 +27,21 @@ public class RandomGenerator {
         rand = new Random();
         assert N == this.props.size();
     }
+
+    public RandomGenerator(int n, int l, int seed) {
+        N = n;
+        L = l;
+        List<Prop> props = new ArrayList<>();
+        // Generation of props
+        for (int i = 0; i < n; i++) {
+            // Name of the vars: x_i
+            props.add(new Prop("x" + i));
+        }
+        this.props = props;
+        rand = new Random(seed);
+        assert N == this.props.size();
+    }
+
 
     public List<Prop> getProps() {
         return props;
