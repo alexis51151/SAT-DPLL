@@ -5,6 +5,7 @@ import Solver.Clause;
 import Solver.Literal;
 import Solver.Prop;
 
+import java.io.*;
 import java.util.*;
 
 public class RandomGenerator {
@@ -52,6 +53,10 @@ public class RandomGenerator {
      * @return a randomly-generated 3-SAT formula
      */
     public CNF generate3SAT() {
+        // Clean up the props
+        for (Prop p : props) {
+            p.reset();
+        }
         // Check if we have enough variables
         assert N > 2;
         // Clauses construction

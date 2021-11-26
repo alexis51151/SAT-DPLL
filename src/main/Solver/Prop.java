@@ -7,8 +7,8 @@ import java.util.Objects;
 public class Prop implements Form {
     private final String symbol;
     private Boolean value = null;
-    private final List<Clause> posClauses = new ArrayList<>();
-    private final List<Clause> negClauses = new ArrayList<>();
+    private List<Clause> posClauses = new ArrayList<>();
+    private List<Clause> negClauses = new ArrayList<>();
 
 
     public String getSymbol() {
@@ -67,23 +67,6 @@ public class Prop implements Form {
         }
     }
 
-    public Boolean propagate(Boolean b) {
-        List<Clause> clauses;
-        if (b) {
-            clauses = negClauses;
-        } else {
-            clauses = posClauses;
-        }
-        for (Clause c : clauses) {
-            assert c.getNbLiterals() <= 3;
-            // Conflict
-            if (c.getNbLiterals() == 1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public List<Clause> getPosClauses() {
         return posClauses;
     }
@@ -91,4 +74,13 @@ public class Prop implements Form {
     public List<Clause> getNegClauses() {
         return negClauses;
     }
+
+    public void reset() {
+        this.value = null;
+        this.posClauses = new ArrayList<>();
+        this.negClauses = new ArrayList<>();
+    }
+
+
+
 }

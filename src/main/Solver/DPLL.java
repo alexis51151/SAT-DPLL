@@ -7,7 +7,7 @@ import java.util.*;
 
 public class DPLL implements SATSolver {
     private final List<Prop> props; // World definition
-    private final Random rand = new Random();   // Random generator 857
+    private final Random rand = new Random(1L);   // Random generator 857
     private final Heuristic heuristic;
 
     public Boolean eval(Form phi, TruthAssignment tau) {
@@ -106,7 +106,7 @@ public class DPLL implements SATSolver {
         // Assign all the atomic propositions
         while (unassigned.size() != 0) {
             // Make a new decision
-            Pair<Prop, Boolean>  choice = splittingRule(unassigned);
+            Pair<Prop, Boolean>  choice = JWsplittingRule(unassigned);
             deductions = unitPropagation(phi, choice, unassigned);
             assignments.add(new Assignment(deductions.a, choice, false));
 
@@ -116,9 +116,7 @@ public class DPLL implements SATSolver {
                 while (a.flipped) {
                     // unassign the flipped choice
                     a.choice.a.setValue(null);
-                    if (!unassigned.contains(a.choice.a)) {
-                        unassigned.add(a.choice.a);
-                    }
+                    unassigned.add(a.choice.a);
                     backtrack(a, unassigned);
                     if (assignments.size() == 0) {
                         return null;
@@ -223,12 +221,44 @@ public class DPLL implements SATSolver {
         return new Pair<>(p, rand.nextBoolean());
     }
 
+    public Pair<Prop, Boolean> JWsplittingRule(List<Prop> AP) {
+        HashMap<Literal, Integer> occurrences = new HashMap<>();
+        for (Prop p: AP) {
+            int valPos = p.getPosClauses().size();
+            int valNeg = p.getNegClauses().size();
+            if (valPos >= valNeg) {
+                occurrences.put(new Literal(p, false), valPos);
+            } else {
+                occurrences.put(new Literal(p, true), valNeg);
+            }
+        }
+
+        //  Find literals with max occurences
+        List<Literal> maxLiterals = new ArrayList<>();
+        int max = 0;
+        for (Map.Entry<Literal, Integer> entry : occurrences.entrySet()) {
+            int val = entry.getValue();
+            if (val > max){
+                maxLiterals = new ArrayList<>(List.of(entry.getKey()));
+                max = val;
+            } else if (val == max) {
+                maxLiterals.add(entry.getKey());
+            }
+        }
+
+        // Randomly break tie
+        Literal l = maxLiterals.get(rand.nextInt(maxLiterals.size()));
+        AP.remove(l.getProp());
+        if (l.isNegative())
+            return new Pair<>(l.getProp(), false);
+        return new Pair<>(l.getProp(), true);
+    }
+
+
     public void backtrack(Assignment a, List<Prop> unassigned) {
         for (Map.Entry<Prop, Boolean> deduction : a.tau.entrySet()) {
             Prop p = deduction.getKey();
-            if (!unassigned.contains(p)) {
-                unassigned.add(p);
-            }
+            unassigned.add(p);
             p.setValue(null);
         }
     }

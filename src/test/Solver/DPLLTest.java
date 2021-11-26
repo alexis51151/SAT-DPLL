@@ -461,7 +461,25 @@ class DPLLTest {
         }
     }
 
-
+    @Test
+    public void debugProba() {
+        int n = 100;
+        float r = 5f;
+//        for (float r = 3; r <= 6; r+= 0.2) {
+        RandomGenerator generator =  new RandomGenerator(n, (int) (n*r));
+        List<Prop> props = new ArrayList<>(generator.getProps());
+        DPLL solver = new DPLL(props);
+        float proba = 0;
+            for (int i = 0; i < 100; i++) {
+                CNF cnf = generator.generate3SAT();
+                HashMap<Prop, Boolean> tau = solver.solve_iter(cnf);
+                if (tau != null) {
+                    proba++;
+                }
+            }
+            System.out.println("Probability of r = " + r + " : " + proba/100);
+//        }
+    }
 
 
     @Test
