@@ -209,7 +209,7 @@ public class EinsteinPuzzle {
     public static void main(String[] args) {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
-        DPLL solver = new DPLL(puzzle.getAP());
+        DPLLRecursive solver = new DPLLRecursive(puzzle.getAP());
         TruthAssignment tau = solver.SAT(cnf);
         System.out.println(cnf);
         System.out.println(tau);

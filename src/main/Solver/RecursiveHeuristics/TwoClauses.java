@@ -1,4 +1,4 @@
-package Solver.Heuristics;
+package Solver.RecursiveHeuristics;
 
 import Solver.*;
 

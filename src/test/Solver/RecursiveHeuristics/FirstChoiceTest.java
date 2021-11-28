@@ -1,4 +1,4 @@
-package Solver.Heuristics;
+package Solver.RecursiveHeuristics;
 
 import Solver.*;
 import org.junit.jupiter.api.Test;
@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class JeroslowWangTest {
+class FirstChoiceTest {
 
     @Test
     void solveEinsteinPuzzle() {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
-        DPLL solver = new DPLL(puzzle.getAP(), new JeroslowWang());
+        DPLLRecursive solver = new DPLLRecursive(puzzle.getAP(), new FirstChoice());
         TruthAssignment tau = solver.SAT(cnf);
 //        System.out.println(cnf);
 //        System.out.println(tau);

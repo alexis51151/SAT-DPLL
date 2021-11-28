@@ -1,4 +1,4 @@
-package Solver.Heuristics;
+package Solver.RecursiveHeuristics;
 
 import Solver.*;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ class RandomChoiceTest {
     void solveEinsteinPuzzle() {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
-        DPLL solver = new DPLL(puzzle.getAP(), new FirstChoice());
+        DPLLRecursive solver = new DPLLRecursive(puzzle.getAP(), new FirstChoice());
         TruthAssignment tau = solver.SAT(cnf);
 //        System.out.println(cnf);
 //        System.out.println(tau);

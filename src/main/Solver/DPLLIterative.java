@@ -1,14 +1,14 @@
 package Solver;
 
-import FormulaGenerator.RandomGenerator;
 import Solver.Heuristics.*;
 
 import java.util.*;
 
-public class DPLL implements SATSolver {
+public class DPLLIterative implements SATSolver {
     private final List<Prop> props; // World definition
     private final Random rand = new Random(1L);   // Random generator 857
     private final Heuristic heuristic;
+    public int nbCalls = 0;
 
     public Boolean eval(Form phi, TruthAssignment tau) {
         return phi.eval(tau);
@@ -18,79 +18,34 @@ public class DPLL implements SATSolver {
         return new ArrayList<>(p);
     }
 
-    public DPLL(List<Prop> props) {
+    public DPLLIterative(List<Prop> props) {
         this.props = props;
         //  By default, random choice
         this.heuristic = new RandomChoice();
     }
 
-    public DPLL(List<Prop> props, Heuristic heuristic) {
+    public DPLLIterative(List<Prop> props, Heuristic heuristic) {
         this.props = props;
         this.heuristic = heuristic;
     }
-
 
     /**
      * Satisfiability wrapper function.
      * @param phi   Formula to satisfy.
      * @return      Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
      */
-    public TruthAssignment SAT(CNF phi) {
-        return solve(phi, DPLL.create(props), new TruthAssignment(new HashSet<>()));
+    public HashMap<Prop, Boolean> SAT(CNF phi) {
+        return solve(phi);
     }
 
-    /**
-     * Satisfiability with truth assignement solver function.
-     * @param phi   Formula to satisfy.
-     * @param unassigned    Set of unassigned propositions in phi.
-     * @param tau   Truth assignment constructed.
-     * @return Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
-     */
-    public TruthAssignment solve(Form phi, List<Prop> unassigned, TruthAssignment tau) {
-        // Base cases
-        if (unassigned.size() == 0 || phi instanceof ConstForm || (phi instanceof CNF && ((CNF) phi).nbClauses() == 0)) {
-            return eval(phi, new TruthAssignment(new HashSet<>())) ? tau : null;
-        }
-
-        assert phi instanceof CNF;
-        // Unit-Preference Rule
-        Pair<Prop, Boolean> choice = heuristic.unitPreferenceRule((CNF) phi, unassigned);
-        if (choice != null) {
-            Prop p = choice.a;
-            Boolean b = choice.b;
-            Form psi = phi.substitute(p.getSymbol(), b);
-            if (b) {
-                Set<Prop> new_props = tau.getTau();
-                new_props.add(p);
-                return solve(psi, unassigned, new TruthAssignment(new_props));
-            }
-            return solve(psi, unassigned, tau);
-        }
-
-        // Splitting Rule
-        choice = heuristic.splittingRule((CNF) phi, unassigned);
-        Prop p = choice.a;
-        Boolean b = choice.b;
-
-        // 1st option
-        Form psi = phi.substitute(p.getSymbol(), b);
-        TruthAssignment new_tau = solve(psi, DPLL.create(unassigned), tau.create(choice));
-        if (new_tau != null){
-            return new_tau;
-        }
-        // 2nd option
-        choice.b = !choice.b;
-        Form theta = phi.substitute(p.getSymbol(), !b);
-        tau.add(choice);
-        return solve(theta, unassigned, tau);
-    }
 
     /**
      * Satisfiability with truth assignement solver function.
      * @param phi   Formula to satisfy.
      * @return Truth assignement that satisfies phi if phi is satisfiable; null otherwise.
      */
-    public HashMap<Prop, Boolean> solve_iter(CNF phi) {
+    public HashMap<Prop, Boolean> solve(CNF phi) {
+        this.nbCalls = 0; // Variable to track the nb of DPLL calls (i.e. calls to the Splitting rule)
         List<Prop> unassigned = this.props;
         Stack<Assignment> assignments = new Stack<>();
         //  Simplify the unit clauses present at the start
@@ -106,7 +61,8 @@ public class DPLL implements SATSolver {
         // Assign all the atomic propositions
         while (unassigned.size() != 0) {
             // Make a new decision
-            Pair<Prop, Boolean>  choice = JWsplittingRule(unassigned);
+            nbCalls++;  // New DPLL call
+            Pair<Prop, Boolean>  choice = heuristic.splittingRule(unassigned);
             deductions = unitPropagation(phi, choice, unassigned);
             assignments.add(new Assignment(deductions.a, choice, false));
 
@@ -131,6 +87,7 @@ public class DPLL implements SATSolver {
             }
         }
 
+        // Retrieve the truth assignment
         while (assignments.size() > 0) {
             Assignment a = assignments.pop();
             tau.put(a.choice.a, a.choice.b);
@@ -138,8 +95,6 @@ public class DPLL implements SATSolver {
         }
         return tau;
     }
-
-
 
     public Pair<HashMap<Prop, Boolean>, Boolean>  unitPropagation(CNF phi, Pair<Prop, Boolean> choice, List<Prop> unassigned) {
         Stack<Pair<Prop, Boolean>> stack = new Stack<>();
@@ -214,46 +169,6 @@ public class DPLL implements SATSolver {
         return new Pair<>(deductions, true);
     }
 
-    public Pair<Prop, Boolean> splittingRule(List<Prop> unassigned) {
-        int index = rand.nextInt(unassigned.size());
-        Prop p = unassigned.get(index);
-        unassigned.remove(index);
-        return new Pair<>(p, rand.nextBoolean());
-    }
-
-    public Pair<Prop, Boolean> JWsplittingRule(List<Prop> AP) {
-        HashMap<Literal, Integer> occurrences = new HashMap<>();
-        for (Prop p: AP) {
-            int valPos = p.getPosClauses().size();
-            int valNeg = p.getNegClauses().size();
-            if (valPos >= valNeg) {
-                occurrences.put(new Literal(p, false), valPos);
-            } else {
-                occurrences.put(new Literal(p, true), valNeg);
-            }
-        }
-
-        //  Find literals with max occurences
-        List<Literal> maxLiterals = new ArrayList<>();
-        int max = 0;
-        for (Map.Entry<Literal, Integer> entry : occurrences.entrySet()) {
-            int val = entry.getValue();
-            if (val > max){
-                maxLiterals = new ArrayList<>(List.of(entry.getKey()));
-                max = val;
-            } else if (val == max) {
-                maxLiterals.add(entry.getKey());
-            }
-        }
-
-        // Randomly break tie
-        Literal l = maxLiterals.get(rand.nextInt(maxLiterals.size()));
-        AP.remove(l.getProp());
-        if (l.isNegative())
-            return new Pair<>(l.getProp(), false);
-        return new Pair<>(l.getProp(), true);
-    }
-
 
     public void backtrack(Assignment a, List<Prop> unassigned) {
         for (Map.Entry<Prop, Boolean> deduction : a.tau.entrySet()) {
@@ -261,15 +176,6 @@ public class DPLL implements SATSolver {
             unassigned.add(p);
             p.setValue(null);
         }
-    }
-
-
-
-    public static void main(String[] args) {
-        RandomGenerator g = new RandomGenerator(40,60);
-        CNF cnf = g.generate3SAT();
-        DPLL solver = new DPLL(g.getProps(), new JeroslowWang());
-        solver.SAT(cnf);
     }
 
 }

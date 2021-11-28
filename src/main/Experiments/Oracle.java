@@ -1,11 +1,8 @@
 package Experiments;
 
 import FormulaGenerator.RandomGenerator;
-import Solver.CNF;
-import Solver.DPLL;
-import Solver.Heuristics.*;
-import Solver.Prop;
-import Solver.TruthAssignment;
+import Solver.*;
+import Solver.RecursiveHeuristics.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,8 +23,8 @@ public class Oracle {
             CNF phi = generator.generate3SAT();
             List<Prop> props = generator.getProps();
             // Generate two instances of the DPLL solver with the given heuristics
-            DPLL solver1 = new DPLL(props, h1);
-            DPLL solver2 = new DPLL(props, h2);
+            DPLLRecursive solver1 = new DPLLRecursive(props, h1);
+            DPLLRecursive solver2 = new DPLLRecursive(props, h2);
             // Verify agreement between the solvers on satisfiability for formula phi
             if ((solver1.SAT(phi) == null && solver2.SAT(phi) != null) || (solver1.SAT(phi) != null && solver2.SAT(phi) == null))
                 disagreements++;
@@ -46,9 +43,9 @@ public class Oracle {
             CNF phi = generator.generate3SAT();
             List<Prop> props = generator.getProps();
             // Generate two instances of the DPLL solver with the given heuristics
-            DPLL solver = new DPLL(new ArrayList<>(props));
+            DPLLIterative solver = new DPLLIterative(new ArrayList<>(props), new Solver.Heuristics.JeroslowWang());
             // Verify agreement between the solvers on satisfiability for formula phi
-            HashMap<Prop, Boolean> tau = solver.solve_iter(phi);
+            HashMap<Prop, Boolean> tau = solver.solve(phi);
             if (tau == null)
                 disagreements++;
         }
@@ -66,7 +63,7 @@ public class Oracle {
             CNF phi = generator.generate3SAT();
             List<Prop> props = generator.getProps();
             // Generate two instances of the DPLL solver with the given heuristics
-            DPLL solver = new DPLL(new ArrayList<>(props), new JeroslowWang());
+            DPLLRecursive solver = new DPLLRecursive(new ArrayList<>(props), new JeroslowWang());
             // Verify agreement between the solvers on satisfiability for formula phi
             TruthAssignment tau = solver.SAT(phi);
             if (tau == null)

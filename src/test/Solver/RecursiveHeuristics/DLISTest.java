@@ -1,4 +1,4 @@
-package Solver.Heuristics;
+package Solver.RecursiveHeuristics;
 
 import FormulaGenerator.RandomGenerator;
 import Solver.*;
@@ -35,7 +35,7 @@ class DLISTest {
         CNF cnf = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2, clause3)));
 
         // DPLL class
-        DPLL solver = new DPLL(Arrays.asList(p,q,r,s), new DLIS());
+        DPLLRecursive solver = new DPLLRecursive(Arrays.asList(p,q,r,s), new DLIS());
 
         // Test for satisfiability
         TruthAssignment tau = solver.SAT(cnf);
@@ -67,7 +67,7 @@ class DLISTest {
         CNF cnf = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2, clause3)));
 
         // DPLL class
-        DPLL solver = new DPLL(Arrays.asList(n11, n12, n21, n22), new DLIS());
+        DPLLRecursive solver = new DPLLRecursive(Arrays.asList(n11, n12, n21, n22), new DLIS());
 
         // Test for satisfiability
         TruthAssignment tau = solver.SAT(cnf);
@@ -96,7 +96,7 @@ class DLISTest {
         CNF cnf = new CNF(new ArrayList<>(Arrays.asList(clause1, clause2, clause3)));
 
         // DPLL class
-        DPLL solver = new DPLL(Arrays.asList(n11, n12, n21, n22), new DLIS());
+        DPLLRecursive solver = new DPLLRecursive(Arrays.asList(n11, n12, n21, n22), new DLIS());
 
         // Test for satisfiability
         TruthAssignment tau = solver.SAT(cnf);
@@ -111,7 +111,7 @@ class DLISTest {
     void solveEinsteinPuzzle() {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
-        DPLL solver = new DPLL(puzzle.getAP(), new DLIS());
+        DPLLRecursive solver = new DPLLRecursive(puzzle.getAP(), new DLIS());
         TruthAssignment tau = solver.SAT(cnf);
 //        System.out.println(cnf);
 //        System.out.println(tau);
@@ -130,7 +130,7 @@ class DLISTest {
     void randomGeneratorTest() {
         RandomGenerator g = new RandomGenerator(40,60);
         CNF cnf = g.generate3SAT();
-        DPLL solver = new DPLL(g.getProps(), new DLIS());
+        DPLLRecursive solver = new DPLLRecursive(g.getProps(), new JeroslowWang());
         solver.SAT(cnf);
     }
 

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +20,7 @@ class EinsteinPuzzleTest {
     void solveEinsteinPuzzle() {
         EinsteinPuzzle puzzle = new EinsteinPuzzle();
         CNF cnf = puzzle.getCnf();
-        DPLL solver = new DPLL(puzzle.getAP());
+        DPLLRecursive solver = new DPLLRecursive(puzzle.getAP());
         TruthAssignment tau = solver.SAT(cnf);
 //        System.out.println(cnf);
 //        System.out.println(tau);

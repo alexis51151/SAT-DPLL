@@ -1,70 +1,26 @@
 package Solver.Heuristics;
 
-import Solver.*;
+import Solver.CNF;
+import Solver.Literal;
+import Solver.Pair;
+import Solver.Prop;
 
 import java.util.*;
 
 public class JeroslowWang extends Heuristic {
-    private Random rand;   // Random generator
-
-    public JeroslowWang(int seed) {
-        this.rand = new Random(seed);
-    }
-
-    public JeroslowWang() {
-        this.rand = new Random();
-    }
-
-
+    public Random rand = new Random(); // To break ties
 
     @Override
-    public Pair<Prop, Boolean> unitPreferenceRule(CNF phi, List<Prop> AP) {
-        //  Find unit clauses
-        List<Clause> unitClauses = new ArrayList<>();
-        for (Clause clause : phi.getClauses()) {
-            if (clause.getNbLiterals() == 1)
-                unitClauses.add(clause);
-        }
-
-        if (unitClauses.size() == 0){
-            return null;
-        }
-
-        //  Pick one clause randomly
-        Clause clause = unitClauses.get(rand.nextInt(unitClauses.size()));
-        phi.removeClause(clause);
-        Literal l = clause.getLiterals().get(0);
-        AP.remove(l.getProp());
-        if (l.isNegative())
-            return new Pair<>(l.getProp(), false);
-        return new Pair<>(l.getProp(), true);
-    }
-
-//    @Override
-//    public Pair<Prop, Boolean> splittingRule(CNF phi, List<Prop> AP) {
-//        int Jmax = 0;
-//        Prop Pmax = AP.get(0);
-//        for (int i = 0; i < 1; i++) {
-//            Prop p = AP.get(i);
-//            int J = 0;
-//            for (Clause c : p.getClauses()) {
-//                J += Math.pow(2,-c.getNbLiterals());
-//            }
-//            if (J > Jmax) {
-//                Jmax = J;
-//                Pmax = p;
-//            }
-//        }
-//        return new Pair<>(Pmax, rand.nextBoolean());
-//    }
-
-    @Override
-    public Pair<Prop, Boolean> splittingRule(CNF phi, List<Prop> AP) {
+    public Pair<Prop, Boolean> splittingRule(List<Prop> AP) {
         HashMap<Literal, Integer> occurrences = new HashMap<>();
-        for (Clause clause : phi.getClauses()) {
-            List<Literal> literals = clause.getLiterals();
-            occurrences.merge(literals.get(0), 1, Integer::sum);
-            occurrences.merge(literals.get(1), 1, Integer::sum);
+        for (Prop p: AP) {
+            int valPos = p.getPosClauses().size();
+            int valNeg = p.getNegClauses().size();
+            if (valPos >= valNeg) {
+                occurrences.put(new Literal(p, false), valPos);
+            } else {
+                occurrences.put(new Literal(p, true), valNeg);
+            }
         }
 
         //  Find literals with max occurences
@@ -86,11 +42,6 @@ public class JeroslowWang extends Heuristic {
         if (l.isNegative())
             return new Pair<>(l.getProp(), false);
         return new Pair<>(l.getProp(), true);
-    }
-
-    @Override
-    public String toString() {
-        return "Jeroslow-Wang heuristic";
     }
 
 }

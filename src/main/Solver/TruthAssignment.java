@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Only used for the Recursive solver. For the iterative solve, I use an HashMap instead.
+ */
 public class TruthAssignment {
     private Set<Prop> tau; // List of props that are evaluated as 1
 
