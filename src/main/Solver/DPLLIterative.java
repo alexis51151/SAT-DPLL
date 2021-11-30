@@ -6,22 +6,13 @@ import java.util.*;
 
 public class DPLLIterative implements SATSolver {
     private final List<Prop> props; // World definition
-    private final Random rand = new Random(1L);   // Random generator 857
     private final Heuristic heuristic;
-    public int nbCalls = 0;
-
-    public Boolean eval(Form phi, TruthAssignment tau) {
-        return phi.eval(tau);
-    }
-
-    public static List<Prop> create(List<Prop> p) {
-        return new ArrayList<>(p);
-    }
+    private int nbCalls = 0;
 
     public DPLLIterative(List<Prop> props) {
         this.props = props;
         //  By default, random choice
-        this.heuristic = new RandomChoice();
+        this.heuristic = new JeroslowWang();
     }
 
     public DPLLIterative(List<Prop> props, Heuristic heuristic) {
@@ -46,7 +37,7 @@ public class DPLLIterative implements SATSolver {
      */
     public HashMap<Prop, Boolean> solve(CNF phi) {
         this.nbCalls = 0; // Variable to track the nb of DPLL calls (i.e. calls to the Splitting rule)
-        List<Prop> unassigned = this.props;
+        List<Prop> unassigned = new ArrayList<>(this.props);
         Stack<Assignment> assignments = new Stack<>();
         //  Simplify the unit clauses present at the start
         Pair<HashMap<Prop, Boolean>, Boolean> deductions = unitPropagation(phi, null, unassigned);
@@ -61,7 +52,7 @@ public class DPLLIterative implements SATSolver {
         // Assign all the atomic propositions
         while (unassigned.size() != 0) {
             // Make a new decision
-            nbCalls++;  // New DPLL call
+            this.nbCalls++;  // New DPLL call
             Pair<Prop, Boolean>  choice = heuristic.splittingRule(unassigned);
             deductions = unitPropagation(phi, choice, unassigned);
             assignments.add(new Assignment(deductions.a, choice, false));
@@ -169,7 +160,6 @@ public class DPLLIterative implements SATSolver {
         return new Pair<>(deductions, true);
     }
 
-
     public void backtrack(Assignment a, List<Prop> unassigned) {
         for (Map.Entry<Prop, Boolean> deduction : a.tau.entrySet()) {
             Prop p = deduction.getKey();
@@ -178,4 +168,7 @@ public class DPLLIterative implements SATSolver {
         }
     }
 
+    public int getNbCalls() {
+        return nbCalls;
+    }
 }

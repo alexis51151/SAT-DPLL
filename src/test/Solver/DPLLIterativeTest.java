@@ -1,9 +1,12 @@
 package Solver;
 
 import FormulaGenerator.RandomGenerator;
+import Solver.Heuristics.Heuristic;
+import Solver.Heuristics.JeroslowWang;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -184,6 +187,41 @@ class DPLLIterativeTest {
 
         assertEquals(expected, tau);
     }
+
+    @Test
+    public void debugSATProbability() {
+        int n = 50;
+        int l = 150;
+        int nb = 100;
+        int timeout = 20;
+        RandomGenerator generator = new RandomGenerator(n, l );
+        List<Prop> props = new ArrayList<>(generator.getProps());
+        Heuristic heuristic = new JeroslowWang();
+        DPLLIterative solver = new DPLLIterative(new ArrayList<>(props), heuristic);
+
+        CNF phi = generator.generate3SAT();
+        HashMap<Prop, Boolean> tau = solver.solve(phi);
+        if (tau == null) {
+            System.out.println("Returned false");
+        }
+
+
+
+
+//        float sat = 0;
+//        for (int i = 0; i < nb; i++) {
+//            CNF phi = generator.generate3SAT();
+//            if (i == 4) {
+//                HashMap<Prop, Boolean> tau = solver.solve(phi);
+//                if (tau != null) {
+//                    sat++;
+//                } else {
+//                    System.out.println("Returned false");
+//                }
+//            }
+//        }
+    }
+
 
 
 }

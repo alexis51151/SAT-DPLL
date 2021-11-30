@@ -82,10 +82,10 @@ public class Oracle {
 //        oracle(new FirstChoice(), new TwoClauses(), 50, 100);
 //        oracle(new RandomChoice(), new JeroslowWang(), 50, 100);
 //        oracle2(new JeroslowWang(), 4, 100);
-        int Nmax = 50;
+        int Nmax = 100;
         int nb = 100;
-        int seed = 2587;
+        int seed = 45;
         oracleIter(Nmax, nb, seed);
-        oracleRec(Nmax, nb, seed);
+//        oracleRec(Nmax, nb, seed);
     }
 }

@@ -8,7 +8,7 @@ import Solver.Prop;
 import java.util.*;
 
 public class JeroslowWang extends Heuristic {
-    public Random rand = new Random(); // To break ties
+    public Random rand = new Random(1L); // To break ties
 
     @Override
     public Pair<Prop, Boolean> splittingRule(List<Prop> AP) {
