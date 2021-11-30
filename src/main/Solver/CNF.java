@@ -1,9 +1,6 @@
 package Solver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class CNF implements Form{
     private List<Clause> clauses;
@@ -86,5 +83,26 @@ public class CNF implements Form{
 
     public List<Literal> getUnitClauses() {
         return unitClauses;
+    }
+
+    public String toDimacs() {
+        StringBuilder result = new StringBuilder();
+        Set<Prop> props = new HashSet<>();
+        for (Clause c : clauses) {
+            StringBuilder cs = new StringBuilder();
+            for (Literal lit : c.getLiterals()) {
+                props.add(lit.getProp());
+                String val = lit.getProp().getSymbol().substring(1);
+                if (lit.isNegative()) {
+                    cs.append("-");
+                }
+                cs.append(val);
+                cs.append(" "); // space delimitor
+            }
+            cs.append("0\n"); // end of clause delimitor
+            result.append(cs);
+        }
+        String problemLine = "p cnf " + props.size() + " " + clauses.size() + "\n";
+        return problemLine + result;
     }
 }
