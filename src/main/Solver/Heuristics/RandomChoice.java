@@ -18,5 +18,11 @@ public class RandomChoice extends Heuristic {
         return new Pair<>(p, rand.nextBoolean());
     }
 
+    @Override
+    public String toString() {
+        return "RandomChoice";
+    }
+
+
 
 }

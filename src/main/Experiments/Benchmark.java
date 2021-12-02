@@ -170,7 +170,7 @@ public class Benchmark {
 
     public static void printMeasurements(int N, Heuristic heuristic) throws IOException {
         /* Files to write the results */
-        File f = new File("measurements_N150" + heuristic.toString() + ".txt");
+        File f = new File("measurements_N" + N + heuristic.toString() + ".txt");
         FileWriter fw = new FileWriter(f);
         for (float r = 3; r <= 6; r+= 0.2) {
             System.out.println("--------r = " + r + "--------");
@@ -178,9 +178,9 @@ public class Benchmark {
             Long medianTime = pair.a;
             Integer medianCalls = pair.b;
             fw.write(new DecimalFormat("#.##").format(medianTime) + "\t");
-            System.out.println("Compute time on random formulas for L/N = " + r + " for N = 150 and heuristic " + heuristic + " is equal to " + medianTime);
+            System.out.println("Compute time on random formulas for L/N = " + r + " for N = " +N + " and heuristic " + heuristic + " is equal to " + medianTime);
             fw.write(medianCalls + "\n");
-            System.out.println("Nb of DPLL calls on random formulas for L/N = " + r + " for N = 150 and heuristic " + heuristic + " is equal to " + medianCalls);
+            System.out.println("Nb of DPLL calls on random formulas for L/N = " + r + " for N = " + N + " and heuristic " + heuristic + " is equal to " + medianCalls);
         }
         fw.close();
 
@@ -191,7 +191,8 @@ public class Benchmark {
 //        printMaxPropsSupported(new RandomChoice());
 //        printSATProbability();
 //        printMeasurements(150, new JeroslowWang());
-        printMeasurements(150, new TwoClauses());
+//        printMeasurements(150, new TwoClauses());
+         printMeasurements(150, new RandomChoice());
      }
 
 }
