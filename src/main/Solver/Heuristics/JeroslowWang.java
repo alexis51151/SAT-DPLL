@@ -11,9 +11,9 @@ public class JeroslowWang extends Heuristic {
     public Random rand = new Random(1L); // To break ties
 
     @Override
-    public Pair<Prop, Boolean> splittingRule(List<Prop> AP) {
+    public Pair<Prop, Boolean> splittingRule(List<Prop> unassigned) {
         HashMap<Literal, Integer> occurrences = new HashMap<>();
-        for (Prop p: AP) {
+        for (Prop p: unassigned) {
             int valPos = p.getPosClauses().size();
             int valNeg = p.getNegClauses().size();
             if (valPos >= valNeg) {
@@ -38,10 +38,16 @@ public class JeroslowWang extends Heuristic {
 
         // Randomly break tie
         Literal l = maxLiterals.get(rand.nextInt(maxLiterals.size()));
-        AP.remove(l.getProp());
+        unassigned.remove(l.getProp());
         if (l.isNegative())
             return new Pair<>(l.getProp(), false);
         return new Pair<>(l.getProp(), true);
     }
+
+    @Override
+    public String toString() {
+        return "Jeroslow-Wang";
+    }
+
 
 }

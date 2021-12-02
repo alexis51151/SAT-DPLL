@@ -145,6 +145,7 @@ class DPLLIterativeTest {
     void solve_iterTest5() {
         RandomGenerator generator = new RandomGenerator(3, 6);
         CNF cnf = generator.generate3SAT();
+        System.out.println(cnf.toDimacs());
         List<Prop> props = generator.getProps();
 
         // DPLL class

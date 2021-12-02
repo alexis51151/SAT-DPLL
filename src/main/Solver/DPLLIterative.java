@@ -11,7 +11,6 @@ public class DPLLIterative implements SATSolver {
 
     public DPLLIterative(List<Prop> props) {
         this.props = props;
-        //  By default, random choice
         this.heuristic = new JeroslowWang();
     }
 

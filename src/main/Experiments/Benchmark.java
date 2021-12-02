@@ -71,6 +71,10 @@ public class Benchmark {
                 if (tau != null) {
                     sat++;
                 }
+//                else {
+//                    System.out.println("UNSAT");
+//                    System.out.println(phi.toDimacs());
+//                }
             } catch (TimeoutException | InterruptedException | ExecutionException ex) {
                 // handle the timeout
                 newNb--;
@@ -105,7 +109,7 @@ public class Benchmark {
             System.out.println("--------r = " + r + "--------");
             p150 = SATProbability(N, (int) (N*r), 100,20);
             outr150.write(new DecimalFormat("#.##").format(p150) + "\n");
-            System.out.println("Probability of satisfiability of random formulas for L/N = " + r + " for N = 100 is equal to " + p150);
+            System.out.println("Probability of satisfiability of random formulas for L/N = " + r + " for N = 150 is equal to " + p150);
         }
         outr150.close();
     }
@@ -121,7 +125,7 @@ public class Benchmark {
      */
     public static Pair<Long, Integer> measure(int n, int l, int nb, int timeout, Heuristic heuristic) {
         // Setting up the solver + formulas generator
-        RandomGenerator generator = new RandomGenerator(n, l);
+        RandomGenerator generator = new RandomGenerator(n, l,1);
         List<Prop> props = new ArrayList<>(generator.getProps());
         DPLLIterative solver = new DPLLIterative(new ArrayList<>(props), heuristic);
         // Performance measurements
@@ -133,12 +137,12 @@ public class Benchmark {
             Callable<HashMap<Prop, Boolean>> task = () -> solver.solve(phi);
             Future<HashMap<Prop, Boolean>> future = executor.submit(task);
             try {
-                long startTime = System.nanoTime();
+                long startTime = System.currentTimeMillis();
                 HashMap<Prop, Boolean> tau = future.get(timeout, TimeUnit.SECONDS);
                 int nbc = solver.getNbCalls();
-                long endTime = System.nanoTime();
-                long timeNano = endTime - startTime;
-                durations.add(timeNano);
+                long endTime = System.currentTimeMillis();
+                long timeMilli= endTime - startTime;
+                durations.add(timeMilli);
                 nbCalls.add(nbc);
             } catch (TimeoutException | InterruptedException | ExecutionException ex) {
                 // handle the timeout
@@ -164,11 +168,10 @@ public class Benchmark {
         return new Pair<>(medianTime, medianCalls);
     }
 
-    public static void printMeasurements(Heuristic heuristic) throws IOException {
+    public static void printMeasurements(int N, Heuristic heuristic) throws IOException {
         /* Files to write the results */
         File f = new File("measurements_N150" + heuristic.toString() + ".txt");
         FileWriter fw = new FileWriter(f);
-        int N = 150; // Nb of variables
         for (float r = 3; r <= 6; r+= 0.2) {
             System.out.println("--------r = " + r + "--------");
             Pair<Long, Integer> pair = measure(N, (int) (N*r), 100, 20, heuristic);
@@ -186,8 +189,9 @@ public class Benchmark {
 
      public static void main(String[] args) throws IOException {
 //        printMaxPropsSupported(new RandomChoice());
-        printSATProbability();
-//        printMeasurements(new JeroslowWang());
-    }
+//        printSATProbability();
+//        printMeasurements(150, new JeroslowWang());
+        printMeasurements(150, new TwoClauses());
+     }
 
 }
