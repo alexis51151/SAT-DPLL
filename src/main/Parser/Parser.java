@@ -1,9 +1,6 @@
 package Parser;
 
-import Solver.CNF;
-import Solver.Clause;
-import Solver.Literal;
-import Solver.Prop;
+import Solver.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,7 +18,7 @@ import java.util.Objects;
 public class Parser {
 
 
-    public static CNF parse(String path) throws IOException {
+    public static Pair<CNF, List<Prop>> parse(String path) throws IOException {
         // Lists to create the CNF
         HashMap<String, Prop> props = new HashMap<>();
         List<Clause> clauses = new ArrayList<>();
@@ -69,6 +66,6 @@ public class Parser {
         }
         clauses.add(new Clause(literals));
         assert clauses.size() == l && props.size() == n;
-        return new CNF(clauses);
+        return new Pair<>(new CNF(clauses), new ArrayList<>(props.values()));
     }
 }

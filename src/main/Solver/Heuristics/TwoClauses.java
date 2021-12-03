@@ -32,7 +32,6 @@ public class TwoClauses extends Heuristic{
             for (Clause c : p.getNegClauses()) {
                 Pair<Literal, Literal> pair = getTwoClausesLiterals(c);
                 if (pair != null) {
-                    List<Literal> literals = c.getLiterals();
                     occurrences.merge(pair.a, 1, Integer::sum);
                     occurrences.merge(pair.b, 1, Integer::sum);
                 }
