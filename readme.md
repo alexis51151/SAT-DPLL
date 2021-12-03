@@ -83,7 +83,7 @@ Alexis Le Glaunec - alexis.leglaunec@rice.edu
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/alexis51151/SAT-DPLL.svg?style=for-the-badge
 [license-url]: https://github.com/alexis51151/SAT-DPLL/blob/master/LICENSE.md
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/alexis-leglaunec
